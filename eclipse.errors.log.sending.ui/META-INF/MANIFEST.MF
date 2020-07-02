@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Error Log Sender UI
+Bundle-SymbolicName: eclipse.errors.log.sending.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: eclipse.errors.log.sending.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.help.ui

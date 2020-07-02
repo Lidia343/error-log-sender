@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="eclipse.errors.log.sending.ui.helpMenu"
+         name="HelpMenu"
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            class="eclipse.errors.log.sending.ui.ContributionFactory"
+            locationURI="menu:help">
+      </menuContribution>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.helpCommands"
+         name="HelpCommands"
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="eclipse.errors.log.sending.ui.handle.SendCommand"
+            id="eclipse.errors.log.sending.ui.sendCommand"
+            name="sendCommand">
+         <commandParameter
+               id="eclipse.errors.log.sending.ui.sendCommand.label"
+               name="label"
+               optional="false"
+               values="Отправить отчёт об ошибке">
+         </commandParameter>
+      </command>
+   </extension>
+
+</plugin>
