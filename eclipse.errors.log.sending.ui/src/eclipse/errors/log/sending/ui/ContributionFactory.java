@@ -1,6 +1,8 @@
 
 package eclipse.errors.log.sending.ui;
 
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.menus.ExtensionContributionFactory;
@@ -9,6 +11,7 @@ import org.eclipse.ui.services.IServiceLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ContributionFactory extends ExtensionContributionFactory
 {
@@ -41,9 +44,16 @@ public class ContributionFactory extends ExtensionContributionFactory
 	{
 		CommandContributionItemParameter par = new CommandContributionItemParameter(a_serviceLocator, "", m_commandId, CommandContributionItem.STYLE_PUSH);
         par.label = m_commandLabel;
-        //par.icon = Activator.getImageDescriptor("icons/name...");
+        par.icon = getContributionItemIcon();
+        
         CommandContributionItem item = new CommandContributionItem(par);
         item.setVisible(true);
         a_additions.addContributionItem(item, null);
+	}
+	
+	private ImageDescriptor getContributionItemIcon ()
+	{
+		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+		return sharedImages.getImageDescriptor(ISharedImages.IMG_OBJ_FILE);
 	}
 }
