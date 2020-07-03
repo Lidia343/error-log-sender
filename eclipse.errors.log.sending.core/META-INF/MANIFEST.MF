@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Error Log Sender Core
+Bundle-SymbolicName: eclipse.errors.log.sending.core
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: eclipse.errors.log.sending.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.core.runtime
+Export-Package: eclipse.errors.log.sending.core
