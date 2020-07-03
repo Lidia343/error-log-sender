@@ -31,13 +31,7 @@ public class ContributionFactory extends ExtensionContributionFactory
 			String id = ext.getAttribute("id");
 			if (id != null && id.equals(m_commandId))
 			{
-				for (IConfigurationElement child : ext.getChildren())
-				{
-					if (child.getAttribute("name").equals("label"))
-					{
-						m_commandLabel = child.getAttribute("values");
-					}
-				}
+				m_commandLabel = ext.getAttribute("description");
 			}
 		}
 	}

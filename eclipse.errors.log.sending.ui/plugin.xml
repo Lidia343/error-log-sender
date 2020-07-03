@@ -17,14 +17,9 @@
          point="org.eclipse.ui.commands">
       <command
             defaultHandler="eclipse.errors.log.sending.ui.handle.SendCommand"
+            description="Отправить сообщение об ошибке"
             id="eclipse.errors.log.sending.ui.sendCommand"
             name="sendCommand">
-         <commandParameter
-               id="eclipse.errors.log.sending.ui.sendCommand.label"
-               name="label"
-               optional="false"
-               values="Отправить отчёт об ошибке">
-         </commandParameter>
       </command>
    </extension>
 
