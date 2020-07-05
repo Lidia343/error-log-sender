@@ -5,5 +5,8 @@ Bundle-SymbolicName: eclipse.errors.log.sending.core
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: eclipse.errors.log.sending.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.core.runtime
-Export-Package: eclipse.errors.log.sending.core
+Require-Bundle: org.eclipse.core.runtime,
+ org.apache.commons.lang3,
+ org.eclipse.swt
+Export-Package: eclipse.errors.log.sending.core,
+ eclipse.errors.log.sending.core.exceptions

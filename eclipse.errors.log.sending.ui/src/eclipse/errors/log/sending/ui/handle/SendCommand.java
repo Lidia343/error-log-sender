@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import eclipse.errors.log.sending.core.ReportArchiveCreator;
+import eclipse.errors.log.sending.core.exceptions.BlockedThreadException;
 
 public class SendCommand extends AbstractHandler
 {
@@ -25,7 +26,7 @@ public class SendCommand extends AbstractHandler
 			archiveCreator.createReportArchive();
 			MessageDialog.openInformation(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_successMessage);
 		} 
-		catch (IOException e) 
+		catch (IOException | InterruptedException | BlockedThreadException e) 
 		{
 			MessageDialog.openError(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_errorMessage + e.getMessage());
 		}
