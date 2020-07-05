@@ -10,14 +10,44 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ReportArchiveCreator 
 {
 	private final String m_systemInfFileName = "metadata.xml";
-	private final String m_zipFileName = "report.zip";
+	private String m_zipFileName = "report";
 	private final String m_zipFileComment = "Archive with system information and the error log.";
+	
+	public ReportArchiveCreator ()
+	{
+		correctZipFileName();
+	}
+	
+	private void correctZipFileName ()
+	{
+		Calendar calendar = GregorianCalendar.getInstance();
+		
+		String day = redactTimePart(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)));
+		String month =  redactTimePart(Integer.toString(calendar.get(Calendar.MONTH) + 1));
+		String year = Integer.toString(calendar.get(Calendar.YEAR));
+		
+		String hour =  redactTimePart(Integer.toString(calendar.get(Calendar.HOUR)));
+		String min =  redactTimePart(Integer.toString(calendar.get(Calendar.MINUTE)));
+		String sec =  redactTimePart(Integer.toString(calendar.get(Calendar.SECOND)));
+		
+		String now = day + "-" + month + "-" + year + " - " + hour + "-" + min + "-" + sec;
+		
+		m_zipFileName += " (" + now + ").zip";
+	}
+	
+	private String redactTimePart (String a_part)
+	{
+		if (a_part.length() == 1) a_part = "0" + a_part;
+		return a_part;
+	}
 	
 	public void createReportArchive () throws IOException, InterruptedException, BlockedThreadException
 	{
@@ -53,7 +83,6 @@ public class ReportArchiveCreator
 			FileInputStream systemFis = new FileInputStream(systemInfFile);
 			writeToOutputStream(systemFis, zout);
 			systemFis.close();
-			//В конце удалить архив
 		}
 		catch (IOException e)
 		{
