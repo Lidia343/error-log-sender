@@ -36,7 +36,7 @@ public class AppUtil
 		String month =  addZeroToString(Integer.toString(calendar.get(Calendar.MONTH) + 1));
 		String year = Integer.toString(calendar.get(Calendar.YEAR));
 		
-		String hour =  addZeroToString(Integer.toString(calendar.get(Calendar.HOUR)));
+		String hour =  addZeroToString(Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)));
 		String min =  addZeroToString(Integer.toString(calendar.get(Calendar.MINUTE)));
 		String sec =  addZeroToString(Integer.toString(calendar.get(Calendar.SECOND)));
 		
