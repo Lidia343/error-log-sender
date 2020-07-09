@@ -1,52 +1,99 @@
 package eclipse.errors.log.sending.core.client;
 
-import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import eclipse.errors.log.sending.core.util.AppUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client 
 {
-	private String m_token = "";
-	private final String m_mainUrlPart = "";
+	private final String m_token = "4r3rSw4654wyb3aEg4Fqq6454qwEbh6q346qGm8emxgok9E8543e";
+	private final String m_request = "http://localhost:8080/report.actions/file";
 	
-	public void sendReportArchive (ZipInputStream a_zipInputStream) throws IOException
+	public void sendReportArchive (String a_reportArchivePath) throws IOException
 	{
-		String request = m_mainUrlPart;
-		String response = sendRequest(request);
-		if (response == null) throw new IOException();
-	}
-	
-	private String sendRequest (String a_url) throws IOException
-	{
-		URL requestUrl = new URL(a_url);
+		URL requestUrl = new URL(m_request);
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Authorization", "OAuth" + m_token);
+		connection.setRequestProperty("Authorization", m_token);
 		connection.connect();
 		
-		int code = connection.getResponseCode();
-		if (code >= 400 && code < 500)
+		try(OutputStream out = connection.getOutputStream())
 		{
-			throw new IOException("Ошибка клиента");
-		}
-		if (code >= 500)
-		{
-			throw new IOException("Ошибка сервера");
+			int beginIndex = a_reportArchivePath.lastIndexOf("\\") + 1;
+			String reportArchiveName = a_reportArchivePath.substring(beginIndex);
+			int archiveNameLength = reportArchiveName.length();
+			String archiveNameLengthLine = Integer.toString(archiveNameLength);
+			
+			archiveNameLengthLine = AppUtil.addZeroToString(archiveNameLengthLine);
+			AppUtil.writeBytes(out, archiveNameLengthLine);       //Запись в поток длины имени архива
+			AppUtil.writeBytes(out, reportArchiveName);           //Запись в поток имени архива
+			
+			int entryCount = 0;
+			List<Long> entrySizes = new ArrayList<>();
+			try (ZipInputStream zin = new ZipInputStream(new FileInputStream(a_reportArchivePath)))
+			{
+				while (zin.getNextEntry() != null)
+				{
+					long size = 0L;
+					while (zin.read() != -1)
+					{
+						size++;
+					}
+					entrySizes.add(size);
+					entryCount++;
+					zin.closeEntry();
+				}
+				
+				String entryCountLine = Integer.toString(entryCount);
+				entryCountLine = AppUtil.addZeroToString(entryCountLine);
+				AppUtil.writeBytes(out, entryCountLine);          //Запись в поток количества вложений архива
+			}
+			
+			try (ZipInputStream zin = new ZipInputStream(new FileInputStream(a_reportArchivePath)))
+			{
+				for (int i = 0; i < entryCount; i++)
+				{
+					ZipEntry entry = zin.getNextEntry();
+					String entryName = entry.getName();
+					String entryNameLenthLine = Integer.toString(entryName.length());
+					
+					entryNameLenthLine = AppUtil.addZeroToString(entryNameLenthLine);
+					AppUtil.writeBytes(out, entryNameLenthLine);         //Запись в поток длины имени вложения
+					AppUtil.writeBytes(out, entryName);                  //Запись в поток имени вложения
+					
+					String byteCountLine = Long.toString(entrySizes.get(i));
+					String byteCountLineLength = Integer.toString(byteCountLine.length());
+					
+					byteCountLineLength = AppUtil.addZeroToString(byteCountLineLength);
+					AppUtil.writeBytes(out, byteCountLineLength);         //Запись в поток длины строки, содержащей размер вложения
+					AppUtil.writeBytes(out, byteCountLine);               //Запись в поток размера вложения (Б)
+					
+					byte[] buffer = new byte[1024*64];
+					int length;
+					while ((length = zin.read(buffer)) > 0)               //Запись в поток архива
+					{
+						out.write(buffer, 0, length);
+					}
+					zin.closeEntry();
+				}
+			}
 		}
 		
-		try (BufferedReader reader = new BufferedReader (new InputStreamReader (connection.getInputStream())))
+		if (connection.getResponseCode() >= 400)
 		{
-			StringBuilder stringBuilder = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				stringBuilder.append(line + "\n");
-			}
-			connection.disconnect();
-			return stringBuilder.toString();
+			throw new IOException(connection.getResponseMessage());
 		}
+		
+		connection.disconnect();
 	}
 }
