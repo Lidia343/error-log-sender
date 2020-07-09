@@ -9,4 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3,
  org.eclipse.swt
 Export-Package: eclipse.errors.log.sending.core,
- eclipse.errors.log.sending.core.exceptions
+ eclipse.errors.log.sending.core.client,
+ eclipse.errors.log.sending.core.exceptions,
+ eclipse.errors.log.sending.core.system,
+ eclipse.errors.log.sending.core.util
