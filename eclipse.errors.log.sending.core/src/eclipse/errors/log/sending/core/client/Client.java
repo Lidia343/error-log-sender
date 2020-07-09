@@ -1,5 +1,6 @@
 package eclipse.errors.log.sending.core.client;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -87,6 +88,8 @@ public class Client
 					zin.closeEntry();
 				}
 			}
+			File archive = new File(a_reportArchivePath);
+			archive.delete();
 		}
 		
 		if (connection.getResponseCode() >= 400)
