@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import eclipse.errors.log.sending.core.ReportArchiveCreator;
+import eclipse.errors.log.sending.core.client.Client;
 import eclipse.errors.log.sending.core.exceptions.BlockedThreadException;
 
 public class SendCommand extends AbstractHandler
@@ -18,12 +19,13 @@ public class SendCommand extends AbstractHandler
 	private final String m_errorMessage = "Произошла ошибка. Подробная информация:\n";
 	
 	@Override
-	public Object execute(ExecutionEvent a_event) throws ExecutionException 
+	public Object execute (ExecutionEvent a_event) throws ExecutionException 
 	{
 		try 
 		{
 			ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 			archiveCreator.createReportArchive();
+			new Client().sendReportArchive(archiveCreator.getReportArchiveName());
 			MessageDialog.openInformation(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_successMessage);
 		} 
 		catch (IOException | InterruptedException | BlockedThreadException e) 
