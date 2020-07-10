@@ -49,7 +49,11 @@ public class ReportArchiveCreator
 				systemInfFileWriter.write("<metadata>\n");
 				AppUtil.writeToXmlFile(systemInfFileWriter, "osName", systemInf.getOsName());
 				AppUtil.writeToXmlFile(systemInfFileWriter, "username", systemInf.getUsername());
-				AppUtil.writeToXmlFile(systemInfFileWriter, "ramAmount", systemInf.getRamAmount());
+				
+				String ramAmount = systemInf.getRamAmount();
+				if (ramAmount != null)
+					AppUtil.writeToXmlFile(systemInfFileWriter, "ramAmount", systemInf.getRamAmount());
+				
 				AppUtil.writeToXmlFile(systemInfFileWriter, "screenResolution", systemInf.getScreenResolution());
 				systemInfFileWriter.write("</metadata>");
 			}
