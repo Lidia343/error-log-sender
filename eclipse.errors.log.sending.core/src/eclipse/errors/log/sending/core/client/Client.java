@@ -1,8 +1,11 @@
 package eclipse.errors.log.sending.core.client;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,7 +19,7 @@ import java.util.List;
 
 public class Client 
 {
-	private final String m_token = "4r3rSw4654wyb3aEg4Fqq6454qwEbh6q346qGm8emxgok9E8543e";
+	private final String m_tokenFileName = "token.txt";
 	private final String m_request = "http://localhost:8080/report.actions/file";
 	
 	public void sendReportArchive (String a_reportArchivePath) throws IOException
@@ -25,7 +28,7 @@ public class Client
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Authorization", m_token);
+		connection.setRequestProperty("Authorization", getToken());
 		connection.connect();
 		
 		try(OutputStream out = connection.getOutputStream())
@@ -98,5 +101,17 @@ public class Client
 		}
 		
 		connection.disconnect();
+	}
+	
+	private String getToken () throws IOException
+	{
+		try (InputStream in = getClass().getClassLoader().getResourceAsStream(m_tokenFileName);
+		     BufferedReader reader = new BufferedReader(new InputStreamReader(in)))
+		{
+			String token = reader.readLine();
+			if (token.endsWith("\r\n")) 
+				token = token.substring(0, token.length());
+			return token;
+		}
 	}
 }
