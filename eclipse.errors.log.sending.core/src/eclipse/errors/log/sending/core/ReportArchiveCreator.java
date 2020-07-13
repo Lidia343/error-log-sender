@@ -2,7 +2,6 @@ package eclipse.errors.log.sending.core;
 
 import org.eclipse.core.runtime.Platform;
 
-import eclipse.errors.log.sending.core.exceptions.BlockedThreadException;
 import eclipse.errors.log.sending.core.system.SystemInformation;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
@@ -24,7 +23,7 @@ public class ReportArchiveCreator
 		m_reportArchivePath += " (" + AppUtil.getCurrentDateAndTime() + ").zip";
 	}
 	
-	public void createReportArchive () throws IOException, InterruptedException, BlockedThreadException
+	public void createReportArchive () throws IOException, InterruptedException
 	{
 		File logFile = Platform.getLogFileLocation().toFile();
 		String logFilePath = logFile.getPath();

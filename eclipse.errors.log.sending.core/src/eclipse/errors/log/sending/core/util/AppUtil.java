@@ -10,8 +10,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.zip.ZipOutputStream;
 
-import eclipse.errors.log.sending.core.exceptions.BlockedThreadException;
-
 public class AppUtil 
 {
 	public static boolean isDigit (char c) 
@@ -55,7 +53,7 @@ public class AppUtil
 		a_writer.write("</" + a_tag + ">\n");
 	}
 	
-	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException, BlockedThreadException
+	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
 	{
 		Process process = a_processBuilder.start();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -66,7 +64,7 @@ public class AppUtil
 		{
 			stringBuilder.append(line + "\n");
 		}
-		if (process.waitFor() != 0) throw new BlockedThreadException();
+		process.waitFor();
 		return stringBuilder.toString();
 	}
 	

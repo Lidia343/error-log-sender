@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Display;
 
-import eclipse.errors.log.sending.core.exceptions.BlockedThreadException;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
 public class SystemInformation 
@@ -27,7 +26,7 @@ public class SystemInformation
 		return System.getProperty("user.name");
 	}
 	
-	public String getRamAmount () throws IOException, InterruptedException, BlockedThreadException
+	public String getRamAmount () throws IOException, InterruptedException
 	{
 		String osName = m_osName.toLowerCase();
 		
