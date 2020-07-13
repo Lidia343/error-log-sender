@@ -5,7 +5,7 @@ Bundle-SymbolicName: eclipse.errors.log.sending.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: eclipse.errors.log.sending.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package:  eclipse.errors.log.sending.ui, eclipse.errors.log.sending.ui.handle
+Export-Package: eclipse.errors.log.sending.ui
 Require-Bundle: org.eclipse.help.ui,
  org.eclipse.jface,
  eclipse.errors.log.sending.core

@@ -7,8 +7,13 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            class="eclipse.errors.log.sending.ui.ContributionFactory"
             locationURI="menu:help">
+         <command
+               commandId="eclipse.errors.log.sending.ui.sendCommand"
+               id="eclipse.errors.log.sending.ui.sendCommand"
+               label="Отправить отчёт об ошибке"
+               style="push">
+         </command>
       </menuContribution>
    </extension>
    <extension
@@ -16,7 +21,7 @@
          name="HelpCommands"
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="eclipse.errors.log.sending.ui.handle.SendCommand"
+            defaultHandler="eclipse.errors.log.sending.ui.SendCommand"
             description="Отправить отчёт об ошибке"
             id="eclipse.errors.log.sending.ui.sendCommand"
             name="sendCommand">

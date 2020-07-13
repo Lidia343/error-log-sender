@@ -1,4 +1,4 @@
-package eclipse.errors.log.sending.ui.handle;
+package eclipse.errors.log.sending.ui;
 
 import java.io.IOException;
 
