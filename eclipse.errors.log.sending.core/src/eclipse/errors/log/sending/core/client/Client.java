@@ -34,7 +34,7 @@ public class Client
 		
 		try(OutputStream out = connection.getOutputStream())
 		{
-			int beginIndex = a_reportArchivePath.lastIndexOf("\\") + 1;
+			int beginIndex = a_reportArchivePath.lastIndexOf(File.separator) + 1;
 			String reportArchiveName = a_reportArchivePath.substring(beginIndex);
 			int archiveNameLength = reportArchiveName.length();
 			String archiveNameLengthLine = Integer.toString(archiveNameLength);
