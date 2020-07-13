@@ -19,8 +19,14 @@ import java.util.List;
 
 public class Client 
 {
-	private final String m_tokenFileName = "token.txt";
-	private final String m_request = "http://localhost:8080/report.actions/file";
+	private final String m_tokenFileName = "properties.txt";
+	private String m_request;
+	private String m_token;
+	
+	public Client () throws IOException
+	{
+		setRequestAndToken();
+	}
 	
 	public void sendReportArchive (String a_reportArchivePath) throws IOException
 	{
@@ -28,7 +34,7 @@ public class Client
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Authorization", getToken());
+		connection.setRequestProperty("Authorization", m_token);
 		connection.connect();
 		
 		try(OutputStream out = connection.getOutputStream())
@@ -103,15 +109,15 @@ public class Client
 		connection.disconnect();
 	}
 	
-	private String getToken () throws IOException
+	private void setRequestAndToken () throws IOException
 	{
 		try (InputStream in = getClass().getClassLoader().getResourceAsStream(m_tokenFileName);
-		     BufferedReader reader = new BufferedReader(new InputStreamReader(in)))
+			     BufferedReader reader = new BufferedReader(new InputStreamReader(in)))
 		{
-			String token = reader.readLine();
-			if (token.endsWith("\r\n")) 
-				token = token.substring(0, token.length());
-			return token;
+			m_request = reader.readLine();
+			m_token = reader.readLine();
+			if (m_token.endsWith("\r\n")) 
+				m_token = m_token.substring(0, m_token.length());
 		}
 	}
 }
