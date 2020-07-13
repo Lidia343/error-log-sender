@@ -73,7 +73,7 @@ public class Client
 		{
 			m_request = reader.readLine();
 			m_token = reader.readLine();
-			if (m_token.endsWith("\r\n")) 
+			if (m_token.endsWith(System.lineSeparator())) 
 				m_token = m_token.substring(0, m_token.length());
 		}
 	}

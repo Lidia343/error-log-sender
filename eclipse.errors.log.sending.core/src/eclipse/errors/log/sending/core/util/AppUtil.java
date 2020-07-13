@@ -50,7 +50,7 @@ public class AppUtil
 	{
 		a_writer.write("\t<" + a_tag + ">");
 		a_writer.write(a_entry);
-		a_writer.write("</" + a_tag + ">\r\n");
+		a_writer.write("</" + a_tag + ">" + System.lineSeparator());
 	}
 	
 	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
@@ -62,7 +62,7 @@ public class AppUtil
 		String line;
 		while ((line = bufReader.readLine()) != null)
 		{
-			stringBuilder.append(line + "\r\n");
+			stringBuilder.append(line + System.lineSeparator());
 		}
 		process.waitFor();
 		return stringBuilder.toString();
