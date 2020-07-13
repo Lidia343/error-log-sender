@@ -44,8 +44,8 @@ public class ReportArchiveCreator
 			try (FileWriter systemInfFileWriter = new FileWriter(systemInfFile, false))
 			{
 				SystemInformation systemInf = new SystemInformation();
-				systemInfFileWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-				systemInfFileWriter.write("<metadata>\n");
+				systemInfFileWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+				systemInfFileWriter.write("<metadata>\r\n");
 				AppUtil.writeToXmlFile(systemInfFileWriter, "osName", systemInf.getOsName());
 				AppUtil.writeToXmlFile(systemInfFileWriter, "username", systemInf.getUsername());
 				

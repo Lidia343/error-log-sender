@@ -9,13 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import eclipse.errors.log.sending.core.util.AppUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Client 
 {
@@ -48,55 +43,17 @@ public class Client
 			AppUtil.writeBytes(out, archiveNameLengthLine);       //Запись в поток длины имени архива
 			AppUtil.writeBytes(out, reportArchiveName);           //Запись в поток имени архива
 			
-			int entryCount = 0;
-			List<Long> entrySizes = new ArrayList<>();
-			try (ZipInputStream zin = new ZipInputStream(new FileInputStream(a_reportArchivePath)))
+			
+			try (InputStream in = new FileInputStream(a_reportArchivePath))
 			{
-				while (zin.getNextEntry() != null)
+				byte[] buffer = new byte[1024*64];
+				int length;
+				while ((length = in.read(buffer)) > 0)            //Запись в поток архива
 				{
-					long size = 0L;
-					while (zin.read() != -1)
-					{
-						size++;
-					}
-					entrySizes.add(size);
-					entryCount++;
-					zin.closeEntry();
+					out.write(buffer, 0, length);
 				}
-				
-				String entryCountLine = Integer.toString(entryCount);
-				entryCountLine = AppUtil.addZeroToString(entryCountLine);
-				AppUtil.writeBytes(out, entryCountLine);          //Запись в поток количества вложений архива
 			}
 			
-			try (ZipInputStream zin = new ZipInputStream(new FileInputStream(a_reportArchivePath)))
-			{
-				for (int i = 0; i < entryCount; i++)
-				{
-					ZipEntry entry = zin.getNextEntry();
-					String entryName = entry.getName();
-					String entryNameLenthLine = Integer.toString(entryName.length());
-					
-					entryNameLenthLine = AppUtil.addZeroToString(entryNameLenthLine);
-					AppUtil.writeBytes(out, entryNameLenthLine);         //Запись в поток длины имени вложения
-					AppUtil.writeBytes(out, entryName);                  //Запись в поток имени вложения
-					
-					String byteCountLine = Long.toString(entrySizes.get(i));
-					String byteCountLineLength = Integer.toString(byteCountLine.length());
-					
-					byteCountLineLength = AppUtil.addZeroToString(byteCountLineLength);
-					AppUtil.writeBytes(out, byteCountLineLength);         //Запись в поток длины строки, содержащей размер вложения
-					AppUtil.writeBytes(out, byteCountLine);               //Запись в поток размера вложения (Б)
-					
-					byte[] buffer = new byte[1024*64];
-					int length;
-					while ((length = zin.read(buffer)) > 0)               //Запись в поток архива
-					{
-						out.write(buffer, 0, length);
-					}
-					zin.closeEntry();
-				}
-			}
 			File archive = new File(a_reportArchivePath);
 			archive.delete();
 		}

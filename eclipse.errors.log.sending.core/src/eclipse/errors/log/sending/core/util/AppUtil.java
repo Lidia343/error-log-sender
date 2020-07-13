@@ -12,7 +12,7 @@ import java.util.zip.ZipOutputStream;
 
 public class AppUtil 
 {
-	public static boolean isDigit (char c) 
+	public static boolean isDigit (char c)
 	{
 		String s = Character.toString(c);
 		try 
@@ -50,7 +50,7 @@ public class AppUtil
 	{
 		a_writer.write("\t<" + a_tag + ">");
 		a_writer.write(a_entry);
-		a_writer.write("</" + a_tag + ">\n");
+		a_writer.write("</" + a_tag + ">\r\n");
 	}
 	
 	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
@@ -62,7 +62,7 @@ public class AppUtil
 		String line;
 		while ((line = bufReader.readLine()) != null)
 		{
-			stringBuilder.append(line + "\n");
+			stringBuilder.append(line + "\r\n");
 		}
 		process.waitFor();
 		return stringBuilder.toString();
