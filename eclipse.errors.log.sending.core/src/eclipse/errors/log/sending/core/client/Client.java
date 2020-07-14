@@ -17,6 +17,7 @@ public class Client
 	private final String m_tokenFileName = "properties.txt";
 	private String m_request;
 	private String m_token;
+	private String m_reportArchivePath;
 	
 	public Client () throws IOException
 	{
@@ -25,6 +26,7 @@ public class Client
 	
 	public void sendReportArchive (String a_reportArchivePath) throws IOException
 	{
+		m_reportArchivePath = a_reportArchivePath;
 		URL requestUrl = new URL(m_request);
 		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
 		connection.setDoOutput(true);
@@ -34,8 +36,8 @@ public class Client
 		
 		try(OutputStream out = connection.getOutputStream())
 		{
-			int beginIndex = a_reportArchivePath.lastIndexOf(File.separator) + 1;
-			String reportArchiveName = a_reportArchivePath.substring(beginIndex);
+			int beginIndex = m_reportArchivePath.lastIndexOf(File.separator) + 1;
+			String reportArchiveName = m_reportArchivePath.substring(beginIndex);
 			int archiveNameLength = reportArchiveName.length();
 			String archiveNameLengthLine = Integer.toString(archiveNameLength);
 			
@@ -44,7 +46,7 @@ public class Client
 			AppUtil.writeBytes(out, reportArchiveName);           //Запись в поток имени архива
 			
 			
-			try (InputStream in = new FileInputStream(a_reportArchivePath))
+			try (InputStream in = new FileInputStream(m_reportArchivePath))
 			{
 				byte[] buffer = new byte[1024*64];
 				int length;
@@ -53,9 +55,6 @@ public class Client
 					out.write(buffer, 0, length);
 				}
 			}
-			
-			File archive = new File(a_reportArchivePath);
-			archive.delete();
 		}
 		
 		if (connection.getResponseCode() >= 400)
@@ -76,5 +75,12 @@ public class Client
 			if (m_token.endsWith(System.lineSeparator())) 
 				m_token = m_token.substring(0, m_token.length());
 		}
+	}
+	
+	public void deleteArchive ()
+	{
+		if (m_reportArchivePath == null) return;
+		File archive = new File(m_reportArchivePath);
+		archive.delete();
 	}
 }

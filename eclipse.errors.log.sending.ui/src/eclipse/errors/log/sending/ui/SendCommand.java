@@ -13,23 +13,29 @@ import eclipse.errors.log.sending.core.client.Client;
 
 public class SendCommand extends AbstractHandler
 {
-	private final String m_messageTitle = "Результат попытки отправки отчёта";
+	private final String m_messageTitle = "Отправка отчёта об ошибке";
 	private final String m_successMessage = "Отчёт об ошибке успешно отправлен";
-	private final String m_errorMessage = "Произошла ошибка. Подробная информация:\n";
+	private final String m_errorMessage = "Произошла ошибка. Подробная информация:" + System.lineSeparator();
 	
 	@Override
 	public Object execute (ExecutionEvent a_event) throws ExecutionException 
 	{
+		Client client = null;
 		try 
 		{
 			ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 			archiveCreator.createReportArchive();
-			new Client().sendReportArchive(archiveCreator.getReportArchiveName());
+			client = new Client();
+			client.sendReportArchive(archiveCreator.getReportArchiveName());
 			MessageDialog.openInformation(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_successMessage);
 		} 
 		catch (IOException | InterruptedException e) 
 		{
 			MessageDialog.openError(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_errorMessage + e.getMessage());
+		}
+		finally 
+		{
+			if (client != null) client.deleteArchive();
 		}
 		return null;
 	}
