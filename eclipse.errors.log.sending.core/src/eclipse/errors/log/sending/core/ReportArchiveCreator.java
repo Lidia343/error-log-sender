@@ -26,10 +26,7 @@ public class ReportArchiveCreator
 	public void createReportArchive () throws IOException, InterruptedException
 	{
 		File logFile = Platform.getLogFileLocation().toFile();
-		String logFilePath = logFile.getPath();
-		int endIndex = logFilePath.lastIndexOf('.');
-		logFilePath = logFilePath.substring(0, endIndex);
-		m_reportArchivePath = logFilePath + m_reportArchivePath;
+		m_reportArchivePath = System.getProperty("java.io.tmpdir") + File.separator + m_reportArchivePath;
 		
 		try (FileInputStream logFin = new FileInputStream(logFile); FileOutputStream logFout = new FileOutputStream(m_reportArchivePath);
 			 ZipOutputStream zipOut = new ZipOutputStream(logFout))
@@ -70,7 +67,7 @@ public class ReportArchiveCreator
 		}
 	}
 	
-	public String getReportArchiveName ()
+	public String getReportArchivePath ()
 	{
 		return m_reportArchivePath;
 	}

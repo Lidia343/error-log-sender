@@ -14,7 +14,7 @@ import eclipse.errors.log.sending.core.util.AppUtil;
 
 public class Client 
 {
-	private final String m_tokenFileName = "properties.txt";
+	private final String m_tokenFileName = "config.txt";
 	private String m_request;
 	private String m_token;
 	private String m_reportArchivePath;

@@ -26,7 +26,7 @@ public class SendCommand extends AbstractHandler
 			ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 			archiveCreator.createReportArchive();
 			client = new Client();
-			client.sendReportArchive(archiveCreator.getReportArchiveName());
+			client.sendReportArchive(archiveCreator.getReportArchivePath());
 			MessageDialog.openInformation(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_successMessage);
 		} 
 		catch (IOException | InterruptedException e) 
