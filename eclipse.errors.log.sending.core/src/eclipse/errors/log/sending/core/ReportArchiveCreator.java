@@ -1,6 +1,7 @@
 package eclipse.errors.log.sending.core;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ui.internal.ConfigurationInfo;
 
 import eclipse.errors.log.sending.core.system.SystemInformation;
 import eclipse.errors.log.sending.core.util.AppUtil;
@@ -10,14 +11,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
+@SuppressWarnings("restriction")
 public class ReportArchiveCreator 
 {
 	private final String m_systemInfFileName = "metadata.xml";
-	private final String m_systemPropFileName = "sysprop.txt";
+	private final String m_summaryFileName = "summary.txt";
 	private String m_reportArchivePath = "report";
 	
 	public ReportArchiveCreator ()
@@ -62,28 +64,23 @@ public class ReportArchiveCreator
 			{
 				AppUtil.writeInputStreamToOutputStream(systemInfFin, zipOut);
 			}
-			
+			systemInfFile.delete();
 			zipOut.closeEntry();
 			
-			File systemPropFile = new File(m_systemPropFileName);
+			File summaryFile = new File(m_summaryFileName);
 			
-			try (FileWriter systemPropFileWriter = new FileWriter(systemPropFile, false))
+			try (FileWriter summaryFileWriter = new FileWriter(summaryFile, false))
 			{
-				Properties properties = System.getProperties();
-				for (Object key : properties.keySet())
-				{
-					systemPropFileWriter.write(((String)key + "=" + properties.getProperty((String)key)) + System.lineSeparator());
-				}
+				summaryFileWriter.write(ConfigurationInfo.getSystemSummary());
 			}
 			
-			zipOut.putNextEntry(new ZipEntry(m_systemPropFileName));
+			zipOut.putNextEntry(new ZipEntry(m_summaryFileName));
 			
-			try (FileInputStream systemPropFin = new FileInputStream(systemPropFile))
+			try (FileInputStream summaryFin = new FileInputStream(summaryFile))
 			{
-				AppUtil.writeInputStreamToOutputStream(systemPropFin, zipOut);
+				AppUtil.writeInputStreamToOutputStream(summaryFin, zipOut);
 			}
-			
-			zipOut.closeEntry();
+			summaryFile.delete();
 		}
 		catch (IOException e)
 		{

@@ -7,7 +7,8 @@ Automatic-Module-Name: eclipse.errors.log.sending.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3,
- org.eclipse.swt
+ org.eclipse.swt,
+ org.eclipse.ui.workbench
 Export-Package: eclipse.errors.log.sending.core,
  eclipse.errors.log.sending.core.client,
  eclipse.errors.log.sending.core.system,
