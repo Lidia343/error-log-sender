@@ -10,12 +10,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ReportArchiveCreator 
 {
 	private final String m_systemInfFileName = "metadata.xml";
+	private final String m_systemPropFileName = "sysprop.txt";
 	private String m_reportArchivePath = "report";
 	
 	public ReportArchiveCreator ()
@@ -60,6 +62,28 @@ public class ReportArchiveCreator
 			{
 				AppUtil.writeInputStreamToOutputStream(systemInfFin, zipOut);
 			}
+			
+			zipOut.closeEntry();
+			
+			File systemPropFile = new File(m_systemPropFileName);
+			
+			try (FileWriter systemPropFileWriter = new FileWriter(systemPropFile, false))
+			{
+				Properties properties = System.getProperties();
+				for (Object key : properties.keySet())
+				{
+					systemPropFileWriter.write(((String)key + "=" + properties.getProperty((String)key)) + System.lineSeparator());
+				}
+			}
+			
+			zipOut.putNextEntry(new ZipEntry(m_systemPropFileName));
+			
+			try (FileInputStream systemPropFin = new FileInputStream(systemPropFile))
+			{
+				AppUtil.writeInputStreamToOutputStream(systemPropFin, zipOut);
+			}
+			
+			zipOut.closeEntry();
 		}
 		catch (IOException e)
 		{
