@@ -6,8 +6,10 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import eclipse.errors.log.sending.core.EmailWorker;
 import eclipse.errors.log.sending.core.ReportArchiveCreator;
 import eclipse.errors.log.sending.core.client.Client;
 
@@ -21,17 +23,25 @@ public class SendCommand extends AbstractHandler
 	public Object execute (ExecutionEvent a_event) throws ExecutionException 
 	{
 		Client client = null;
+		Shell parent = HandlerUtil.getActiveShell(a_event);
 		try 
 		{
+			EmailWorker emailWorker = new EmailWorker();
+			if (!emailWorker.checkEmailFile())
+			{
+				EmailWindow emailWindow = new EmailWindow();
+				emailWindow.show();
+			}
+			
 			ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 			archiveCreator.createReportArchive();
 			client = new Client();
 			client.sendReportArchive(archiveCreator.getReportArchivePath());
-			MessageDialog.openInformation(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_successMessage);
+			MessageDialog.openInformation(parent, m_messageTitle, m_successMessage);
 		} 
 		catch (IOException | InterruptedException e) 
 		{
-			MessageDialog.openError(HandlerUtil.getActiveShell(a_event), m_messageTitle, m_errorMessage + e.getMessage());
+			MessageDialog.openError(parent, m_messageTitle, m_errorMessage + e.getMessage());
 		}
 		finally 
 		{
