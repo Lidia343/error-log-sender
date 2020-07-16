@@ -1,11 +1,16 @@
 package eclipse.errors.log.sending.core.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.zip.ZipOutputStream;
@@ -46,13 +51,6 @@ public class AppUtil
 		return a_string.length() == 1 ? "0" + a_string : a_string;
 	}
 	
-	public static void writeToXmlFile (FileWriter a_writer, String a_tag, String a_entry) throws IOException
-	{
-		a_writer.write("\t<" + a_tag + ">");
-		a_writer.write(a_entry);
-		a_writer.write("</" + a_tag + ">" + System.lineSeparator());
-	}
-	
 	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
 	{
 		Process process = a_processBuilder.start();
@@ -84,6 +82,33 @@ public class AppUtil
 		{
 			a_zout.write(buffer, 0, length);
 			length = a_fis.read(buffer);
+		}
+	}
+	
+	public static void writeToXmlFile (FileWriter a_writer, String a_tag, String a_entry) throws IOException
+	{
+		a_writer.write("\t<" + a_tag + ">");
+		a_writer.write(a_entry);
+		a_writer.write("</" + a_tag + ">" + System.lineSeparator());
+	}
+	
+	public static void writeToFile (String a_filePath, String a_line) throws FileNotFoundException, IOException
+	{
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter
+			(new FileOutputStream(a_filePath))))
+		{
+			out.write(a_line);
+		}
+	}
+	
+	public static String readFromFile (String a_filePath) throws IOException
+	{
+		File file = new File(a_filePath);
+		file.createNewFile();
+		
+		try (BufferedReader in = new BufferedReader (new InputStreamReader(new FileInputStream(file))))
+		{
+			return in.readLine();
 		}
 	}
 }
