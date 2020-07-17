@@ -1,4 +1,4 @@
-package eclipse.errors.log.sending.ui;
+package eclipse.errors.log.sending.ui.command;
 
 import java.io.IOException;
 
@@ -9,8 +9,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import eclipse.errors.log.sending.core.email.EmailWorker;
+import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.email.IEmailSavingListener;
+import eclipse.errors.log.sending.ui.email.EmailWindow;
 import eclipse.errors.log.sending.core.ReportArchiveCreator;
 import eclipse.errors.log.sending.core.client.Client;
 
@@ -38,8 +39,8 @@ public class SendCommand extends AbstractHandler
 				}
 			};
 			
-			EmailWorker emailWorker = new EmailWorker();
-			if (!emailWorker.checkEmailFile())
+			EmailChecker emailChecker = new EmailChecker();
+			if (!emailChecker.checkEmailPreference())
 			{
 				EmailWindow emailWindow = new EmailWindow(emailSavingListener);
 				emailWindow.show();
