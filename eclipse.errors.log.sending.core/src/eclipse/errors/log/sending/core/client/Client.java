@@ -36,12 +36,18 @@ public class Client
 		
 		try(OutputStream out = connection.getOutputStream())
 		{
+			String email = AppUtil.getEmailFromPreferences();
+			String emailLengthLine = AppUtil.addZeroToString(Integer.toString(email.length()));
+			
+			AppUtil.writeBytes(out, emailLengthLine);			  //Запись в поток длины адреса почты
+			AppUtil.writeBytes(out, email);                       //Запись в поток адреса почты
+			
 			int beginIndex = m_reportArchivePath.lastIndexOf(File.separator) + 1;
 			String reportArchiveName = m_reportArchivePath.substring(beginIndex);
 			int archiveNameLength = reportArchiveName.length();
 			String archiveNameLengthLine = Integer.toString(archiveNameLength);
-			
 			archiveNameLengthLine = AppUtil.addZeroToString(archiveNameLengthLine);
+			
 			AppUtil.writeBytes(out, archiveNameLengthLine);       //Запись в поток длины имени архива
 			AppUtil.writeBytes(out, reportArchiveName);           //Запись в поток имени архива
 			
