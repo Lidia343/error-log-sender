@@ -15,8 +15,16 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.zip.ZipOutputStream;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.osgi.service.prefs.BackingStoreException;
+
+import eclipse.errors.log.sending.core.email.EmailChecker;
+
 public class AppUtil 
 {
+	public static final String PLUGIN_ID = "eclipse.errors.log.sending.core";
+	
 	public static boolean isDigit (char c)
 	{
 		String s = Character.toString(c);
@@ -110,5 +118,26 @@ public class AppUtil
 		{
 			return in.readLine();
 		}
+	}
+	
+	public static String getEmailFromPreferences ()
+	{
+		return getPreferences().get(EmailChecker.EMAIL_KEY, "");
+	}
+	
+	public static boolean putEmailPreference (String a_email) throws BackingStoreException
+	{
+		EmailChecker emailChecker = new EmailChecker();
+		if (!emailChecker.checkEmail(a_email)) return false;
+		
+		IEclipsePreferences preferences = getPreferences();
+		preferences.put(EmailChecker.EMAIL_KEY, a_email);
+		preferences.flush();
+		return true;
+	}
+	
+	private static IEclipsePreferences getPreferences ()
+	{
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);//ConfigurationScope
 	}
 }
