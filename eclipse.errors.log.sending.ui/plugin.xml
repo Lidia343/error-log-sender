@@ -9,23 +9,41 @@
             allPopups="false"
             locationURI="menu:help">
          <command
-               commandId="eclipse.errors.log.sending.ui.sendCommand"
-               id="eclipse.errors.log.sending.ui.sendCommand"
+               commandId="eclipse.errors.log.sending.ui.command.sendCommand"
+               id="eclipse.errors.log.sending.ui.command.sendCommand"
                label="Отправить отчёт об ошибке"
                style="push">
          </command>
       </menuContribution>
    </extension>
    <extension
-         id="eclipse.errors.log.sending.ui.helpCommands"
+         id="eclipse.errors.log.sending.ui.command.helpCommands"
          name="HelpCommands"
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="eclipse.errors.log.sending.ui.SendCommand"
+            defaultHandler="eclipse.errors.log.sending.ui.command.SendCommand"
             description="Отправить отчёт об ошибке"
-            id="eclipse.errors.log.sending.ui.sendCommand"
+            id="eclipse.errors.log.sending.ui.command.sendCommand"
             name="sendCommand">
       </command>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.PreferencePages"
+         name="PreferencePages"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="eclipse.errors.log.sending.ui.email.EmailPreferencePage"
+            id="eclipse.errors.log.sending.ui.email.emailPreferencePage"
+            name="Адрес электронной почты">
+      </page>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.preferences"
+         name="Preferences"
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="eclipse.errors.log.sending.ui.email.EmailPreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>
