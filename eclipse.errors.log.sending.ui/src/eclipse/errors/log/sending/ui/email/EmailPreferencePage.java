@@ -36,17 +36,17 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
 			{
 				if (a_event.getProperty().equals(EmailChecker.EMAIL_KEY))
 				{
-					EmailChecker emailChecker = new EmailChecker();
-					
 					String oldValue = a_event.getOldValue().toString();
-
-					if (!emailChecker.checkEmail(a_event.getNewValue().toString()))
+					String newValue = a_event.getNewValue().toString();
+					
+					EmailChecker emailChecker = new EmailChecker();
+					if (!emailChecker.checkEmail(newValue))
 					{
 						try
 						{
 							AppUtil.putEmailPreference(oldValue);
 							m_stringFieldEditor.setStringValue(oldValue);
-						} 
+						}
 						catch (BackingStoreException e)
 						{
 							e.printStackTrace();
@@ -63,7 +63,7 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
 	@Override
 	protected void createFieldEditors() 
 	{
-		m_stringFieldEditor = new StringFieldEditor(EmailChecker.EMAIL_KEY, "Email:", getFieldEditorParent());
+		m_stringFieldEditor = new StringFieldEditor(EmailChecker.EMAIL_KEY, EmailWindow.EMAIL_LABEL_TEXT, getFieldEditorParent());
 		m_stringFieldEditor.setTextLimit(EmailChecker.EMAIL_TEXT_LIMIT);
         addField(m_stringFieldEditor);
 	}
