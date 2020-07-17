@@ -1,4 +1,4 @@
-package eclipse.errors.log.sending.ui;
+package eclipse.errors.log.sending.ui.email;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,17 +20,19 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.prefs.BackingStoreException;
 
-import eclipse.errors.log.sending.core.email.EmailWorker;
+import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.email.IEmailSavingListener;
 import eclipse.errors.log.sending.core.util.AppUtil;
+import eclipse.errors.log.sending.ui.command.SendCommand;
 
 public class EmailWindow
 {
 	private final String m_openedEmailWindow = "opened";
 	private final String m_closedEmailWindow = "closed";
 	
-	private final String m_statusFilePath = EmailWorker.EMAIL_FILE_PATH_PART + File.separator + "emailWindowStatus.txt";
+	private final String m_statusFilePath = System.getProperty("java.io.tmpdir") + File.separator + "emailWindowStatus.txt";
 	
 	private Shell m_parent;
 	private IEmailSavingListener m_emailSavinglistener;
@@ -49,7 +51,7 @@ public class EmailWindow
 		
 		m_parent = new Shell(Display.getCurrent());
 		m_parent.setText("Ввод адреса электронной почты");
-		m_parent.setMinimumSize(325, 107);
+		m_parent.setMinimumSize(380, 150);
 		m_parent.setImage(getShellImage());
 		
 		GridLayout layout = new GridLayout(1, true);
@@ -60,12 +62,16 @@ public class EmailWindow
 		GridData g = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		composite.setLayoutData(g);
 		
-		Label emailLabel = new Label(composite , SWT.NONE);
-		emailLabel.setText("Email: ");
-		emailLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		createLabel(composite, "Перед отправкой отчёта на сервер необходимо указать адрес электронной почты для обратной связи.", 2);
+		createLabel(composite, "В дальнейшем возможно изменение адреса в настройках.", 2);
+		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		
+		createLabel(composite, "Email: ", 1);
 		
 		Text emailText = new Text(composite , SWT.NONE);
 		emailText.setLayoutData(g);
+		emailText.setTextLimit(EmailChecker.EMAIL_TEXT_LIMIT);
 		
 		Button savingButton = new Button(composite, SWT.PUSH);
 		savingButton.setText("Сохранить");
@@ -78,30 +84,27 @@ public class EmailWindow
 			public void widgetSelected(SelectionEvent a_e) 
 			{
 				String line = emailText.getText();
-				EmailWorker emailWorker = new EmailWorker();
-				if (emailWorker.isEmail(line))
+				try 
 				{
-					try 
+					if (AppUtil.putEmailPreference(line))
 					{
-						AppUtil.writeToFile(EmailWorker.EMAIL_FILE_PATH, line);
 						MessageDialog.openInformation(m_parent, "Сохранение адреса почты", "Адрес электронной почты сохранён.");
 						m_parent.dispose();
-					} 
-					catch (IOException e)
-					{
-						e.printStackTrace();
 					}
-				}
-				else
+					else
+					{
+						MessageDialog.openWarning(m_parent, "Проверка адреса почты", "Некорректный адрес электронной почты.");
+					}
+				} 
+				catch (BackingStoreException e) 
 				{
-					MessageDialog.openWarning(m_parent, "Проверка адреса почты", "Некорректный адрес электронной почты.");
+					e.printStackTrace();
 				}
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent a_e) 
 			{
-				
 			}
 		});
 		
@@ -132,5 +135,12 @@ public class EmailWindow
 	{
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 		return sharedImages.getImageDescriptor(ISharedImages.IMG_OBJ_FILE).createImage();
+	}
+	
+	private void createLabel (Composite a_composite, String a_text, int a_horSpan)
+	{
+		Label label = new Label(a_composite , SWT.NONE);
+		label.setText(a_text);
+		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, a_horSpan, 1));
 	}
 }
