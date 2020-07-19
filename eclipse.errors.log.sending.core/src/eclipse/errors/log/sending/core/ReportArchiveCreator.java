@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
 @SuppressWarnings("restriction")
 public class ReportArchiveCreator 
 {
@@ -36,12 +35,9 @@ public class ReportArchiveCreator
 			 ZipOutputStream zipOut = new ZipOutputStream(logFout))
 		{
 			zipOut.putNextEntry(new ZipEntry(logFile.getName()));
-			
 			AppUtil.writeInputStreamToOutputStream(logFin, zipOut);
-			zipOut.closeEntry();
 			
-			File systemInfFile = new File(m_systemInfFileName);
-			
+			File systemInfFile = AppUtil.putNextEntryAndGetEntryFile(zipOut, m_systemInfFileName);
 			try (FileWriter systemInfFileWriter = new FileWriter(systemInfFile, false))
 			{
 				SystemInformation systemInf = new SystemInformation();
@@ -52,35 +48,21 @@ public class ReportArchiveCreator
 				
 				String ramAmount = systemInf.getRamAmount();
 				if (ramAmount != null)
+				{
 					AppUtil.writeToXmlFile(systemInfFileWriter, "ramAmount", systemInf.getRamAmount());
+				}
 				
 				AppUtil.writeToXmlFile(systemInfFileWriter, "screenResolution", systemInf.getScreenResolution());
 				systemInfFileWriter.write("</metadata>");
 			}
+			AppUtil.writeFileToOutputStream(systemInfFile, zipOut);
 			
-			zipOut.putNextEntry(new ZipEntry(m_systemInfFileName));
-			
-			try (FileInputStream systemInfFin = new FileInputStream(systemInfFile))
-			{
-				AppUtil.writeInputStreamToOutputStream(systemInfFin, zipOut);
-			}
-			systemInfFile.delete();
-			zipOut.closeEntry();
-			
-			File summaryFile = new File(m_summaryFileName);
-			
+			File summaryFile = AppUtil.putNextEntryAndGetEntryFile(zipOut, m_summaryFileName);
 			try (FileWriter summaryFileWriter = new FileWriter(summaryFile, false))
 			{
 				summaryFileWriter.write(ConfigurationInfo.getSystemSummary());
 			}
-			
-			zipOut.putNextEntry(new ZipEntry(m_summaryFileName));
-			
-			try (FileInputStream summaryFin = new FileInputStream(summaryFile))
-			{
-				AppUtil.writeInputStreamToOutputStream(summaryFin, zipOut);
-			}
-			summaryFile.delete();
+			AppUtil.writeFileToOutputStream(summaryFile, zipOut);
 		}
 		catch (IOException e)
 		{

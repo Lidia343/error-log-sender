@@ -16,7 +16,7 @@ public class EmailChecker
 	}
 	
 	public boolean checkEmail (String a_email)
-	{
+	{	
 		if (a_email == null) return false;
 		
 		int atCharIndex = a_email.indexOf('@');
