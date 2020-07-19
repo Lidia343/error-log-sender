@@ -12,7 +12,6 @@ public class EmailPreferenceInitializer extends AbstractPreferenceInitializer
 	@Override
 	public void initializeDefaultPreferences() 
 	{
-		ScopedPreferenceStore scopedPreferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, AppUtil.PLUGIN_ID);
-		scopedPreferenceStore.setDefault(EmailChecker.EMAIL_KEY, "");
+		new ScopedPreferenceStore(InstanceScope.INSTANCE, AppUtil.PLUGIN_ID).setDefault(EmailChecker.EMAIL_KEY, "");
 	}
 }
