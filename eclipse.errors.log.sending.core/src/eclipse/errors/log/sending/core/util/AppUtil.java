@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -25,9 +26,9 @@ public class AppUtil
 {
 	public static final String PLUGIN_ID = "eclipse.errors.log.sending.core";
 	
-	public static boolean isDigit (char c)
+	public static boolean isDigit (char a_c)
 	{
-		String s = Character.toString(c);
+		String s = Character.toString(a_c);
 		try 
 		{
 			Integer.parseInt(s);
@@ -59,7 +60,13 @@ public class AppUtil
 		return a_string.length() == 1 ? "0" + a_string : a_string;
 	}
 	
-	public static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
+	public static String commandAndGetResult (ProcessBuilder a_processBuilder, String a_commandLineArray[]) throws IOException, InterruptedException
+	{
+		a_processBuilder.command(a_commandLineArray[0], a_commandLineArray[1], a_commandLineArray[2]);
+		return AppUtil.getInputStreamAsString(a_processBuilder);
+	}
+	
+	private static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
 	{
 		Process process = a_processBuilder.start();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -82,15 +89,25 @@ public class AppUtil
 		}
 	}
 	
-	public static void writeInputStreamToOutputStream (FileInputStream a_fis, ZipOutputStream a_zout) throws IOException
+	public static void writeInputStreamToOutputStream (FileInputStream a_fin, ZipOutputStream a_zout) throws IOException
 	{
 		byte[] buffer = new byte[64*1024];
-		int length = a_fis.read(buffer);
+		int length = a_fin.read(buffer);
 		while (length > 0)
 		{
 			a_zout.write(buffer, 0, length);
-			length = a_fis.read(buffer);
+			length = a_fin.read(buffer);
 		}
+		a_zout.closeEntry();
+	}
+	
+	public static void writeFileToOutputStream (File a_file, ZipOutputStream a_zout) throws IOException
+	{
+		try (FileInputStream in = new FileInputStream(a_file))
+		{
+			AppUtil.writeInputStreamToOutputStream(in, a_zout);
+		}
+		a_file.delete();
 	}
 	
 	public static void writeToXmlFile (FileWriter a_writer, String a_tag, String a_entry) throws IOException
@@ -100,12 +117,11 @@ public class AppUtil
 		a_writer.write("</" + a_tag + ">" + System.lineSeparator());
 	}
 	
-	public static void writeToFile (String a_filePath, String a_line) throws FileNotFoundException, IOException
+	public static void writeToFile (String a_filePath, String a_string) throws FileNotFoundException, IOException
 	{
-		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter
-			(new FileOutputStream(a_filePath))))
+		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(a_filePath))))
 		{
-			out.write(a_line);
+			out.write(a_string);
 		}
 	}
 	
@@ -120,6 +136,12 @@ public class AppUtil
 		}
 	}
 	
+	public static File putNextEntryAndGetEntryFile (ZipOutputStream a_zout, String a_fileName) throws IOException
+	{
+		a_zout.putNextEntry(new ZipEntry(a_fileName));
+		return new File(a_fileName);
+	}
+	
 	public static String getEmailFromPreferences ()
 	{
 		return getPreferences().get(EmailChecker.EMAIL_KEY, "");
@@ -127,8 +149,7 @@ public class AppUtil
 	
 	public static boolean putEmailPreference (String a_email) throws BackingStoreException
 	{
-		EmailChecker emailChecker = new EmailChecker();
-		if (!emailChecker.checkEmail(a_email)) return false;
+		if (!new EmailChecker().checkEmail(a_email)) return false;
 		
 		IEclipsePreferences preferences = getPreferences();
 		preferences.put(EmailChecker.EMAIL_KEY, a_email);
@@ -138,6 +159,6 @@ public class AppUtil
 	
 	private static IEclipsePreferences getPreferences ()
 	{
-		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);//ConfigurationScope
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);
 	}
 }

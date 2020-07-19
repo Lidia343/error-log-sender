@@ -33,8 +33,7 @@ public class SystemInformation
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		if (osName.contains("win"))
 		{
-			processBuilder.command("cmd.exe", "/c", "wmic memorychip get Capacity");
-			String result = AppUtil.getInputStreamAsString(processBuilder);
+			String result = AppUtil.commandAndGetResult(processBuilder, new String[] {"cmd.exe", "/c", "wmic memorychip get Capacity"});
 			
 			String ramAmountInfo = "";
 			for (char c : result.toCharArray())
@@ -62,8 +61,7 @@ public class SystemInformation
 		}
 		if (osName.contains("nux"))
 		{
-			processBuilder.command("bash", "-c", "cat /proc/meminfo");
-			String result = AppUtil.getInputStreamAsString(processBuilder);
+			String result = AppUtil.commandAndGetResult(processBuilder, new String[] {"bash", "-c", "cat /proc/meminfo"});
 			
 			String ramAmountLine = "";
 			int beginIndex = "MemTotal:".length();
@@ -72,6 +70,7 @@ public class SystemInformation
 				if (AppUtil.isDigit(c)) ramAmountLine += Character.toString(c);
 				else if (!ramAmountLine.equals("")) break;
 			}
+			
 			long ramAmount = Math.round((double) (Long.parseLong(ramAmountLine) / Math.pow(1024, 2)));
 			return Long.toString(ramAmount) + " ГБ";
 		}
@@ -81,7 +80,7 @@ public class SystemInformation
 	public String getScreenResolution ()
 	{
 		Device device = Display.getDefault();
-		char c = (char) 215; //Код символа для разделения параметров разрешения экрана
+		char c = (char) 215;	//Код символа для разделения параметров разрешения экрана
 		return  Integer.toString(device.getBounds().width) + c + device.getBounds().height;
 	}
 }
