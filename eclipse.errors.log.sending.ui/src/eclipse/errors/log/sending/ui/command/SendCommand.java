@@ -18,8 +18,6 @@ import eclipse.errors.log.sending.core.client.Client;
 public class SendCommand extends AbstractHandler
 {
 	private final String m_messageTitle = "Отправка отчёта об ошибке";
-	private final String m_successMessage = "Отчёт об ошибке успешно отправлен";
-	public final static String ERROR_MESSAGE = "Произошла ошибка. Подробная информация:" + System.lineSeparator();
 	
 	private Shell m_parent = null;
 	private Client m_client = null;
@@ -30,26 +28,12 @@ public class SendCommand extends AbstractHandler
 		m_parent = HandlerUtil.getActiveShell(a_event);
 		try 
 		{
-			IEmailSavingListener emailSavingListener = new IEmailSavingListener ()
-			{
-				@Override
-				public void emailSaved() throws Exception
-				{
-					sendReportArchive();
-				}
-			};
-			
-			EmailChecker emailChecker = new EmailChecker();
-			if (!emailChecker.checkEmailPreference())
-			{
-				EmailWindow emailWindow = new EmailWindow(emailSavingListener);
-				emailWindow.show();
-			}
+			if (!new EmailChecker().checkEmailPreference()) EmailWindow.show(getEmailSavingListener());
 			else sendReportArchive();
 		} 
 		catch (IOException | InterruptedException e) 
 		{
-			MessageDialog.openError(m_parent, m_messageTitle, ERROR_MESSAGE + e.getMessage());
+			MessageDialog.openError(m_parent, m_messageTitle, EmailWindow.ERROR_MESSAGE + e.getMessage());
 		}
 		finally 
 		{
@@ -58,12 +42,24 @@ public class SendCommand extends AbstractHandler
 		return null;
 	}
 	
-	private void sendReportArchive() throws IOException, InterruptedException
+	private IEmailSavingListener getEmailSavingListener ()
+	{
+		return new IEmailSavingListener ()
+		{
+			@Override
+			public void emailSaved() throws Exception
+			{
+				sendReportArchive();
+			}
+		};
+	}
+	
+	private void sendReportArchive () throws IOException, InterruptedException
 	{
 		ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 		archiveCreator.createReportArchive();
 		m_client = new Client();
 		m_client.sendReportArchive(archiveCreator.getReportArchivePath());
-		MessageDialog.openInformation(m_parent, m_messageTitle, m_successMessage);
+		MessageDialog.openInformation(m_parent, m_messageTitle, "Отчёт об ошибке успешно отправлен");
 	}
 }

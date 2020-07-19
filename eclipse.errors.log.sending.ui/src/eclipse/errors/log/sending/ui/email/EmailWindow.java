@@ -1,6 +1,5 @@
 package eclipse.errors.log.sending.ui.email;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,32 +23,28 @@ import org.eclipse.ui.PlatformUI;
 import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.email.IEmailSavingListener;
 import eclipse.errors.log.sending.core.util.AppUtil;
-import eclipse.errors.log.sending.ui.command.SendCommand;
 
 public class EmailWindow
 {
 	public static final String EMAIL_LABEL_TEXT = "Email:";
+	public static final String ERROR_MESSAGE = "Произошла ошибка. Подробная информация:" + System.lineSeparator();
 	
-	private final String m_openedEmailWindow = "opened";
-	private final String m_closedEmailWindow = "closed";
+	private static EmailWindow m_instance;
 	
-	private final String m_statusFilePath = System.getProperty("java.io.tmpdir") + File.separator + "emailWindowStatus.txt";
+	private static IEmailSavingListener m_emailSavinglistener;
 	
-	private IEmailSavingListener m_emailSavinglistener;
+	private static boolean m_exitBySavingButton = false;
 	
-	private boolean m_exitBySavingButton = false;
-	
-	public EmailWindow (IEmailSavingListener a_emailSavinglistener)
+	private EmailWindow (IEmailSavingListener a_emailSavinglistener)
 	{
 		m_emailSavinglistener = a_emailSavinglistener;
 	}
 	
-	public void show () throws IOException
+	public static void show (IEmailSavingListener a_emailSavinglistener) throws IOException
 	{
-		String status = AppUtil.readFromFile(m_statusFilePath);
-		if (status != null && status.equals(m_openedEmailWindow)) return;
+		if (m_instance != null) return;
 		
-		AppUtil.writeToFile(m_statusFilePath, m_openedEmailWindow);
+		m_instance = new EmailWindow(a_emailSavinglistener);
 		
 		Shell parent = new Shell(Display.getCurrent(), SWT.DIALOG_TRIM);
 		parent.setText("Ввод адреса электронной почты");
@@ -65,6 +60,7 @@ public class EmailWindow
 		
 		createLabel(composite, "Перед отправкой отчёта на сервер необходимо указать адрес электронной почты для обратной связи.", 2);
 		createLabel(composite, "В дальнейшем возможно изменение адреса в настройках.", 2);
+		
 		Label label = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		
@@ -79,20 +75,16 @@ public class EmailWindow
 		savingButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
 		parent.setDefaultButton(savingButton);
 		
-		savingButton.addSelectionListener(new SelectionListener()
+		savingButton.addSelectionListener(new SelectionListener ()
 		{
 			@Override
-			public void widgetSelected (SelectionEvent a_e) 
+			public void widgetSelected (SelectionEvent a_selEv) 
 			{
-				String line = emailText.getText();
 				try 
 				{
-					if (AppUtil.putEmailPreference(line))
+					if (AppUtil.putEmailPreference(emailText.getText()))
 					{
-						if (!m_exitBySavingButton)
-						{
-							MessageDialog.openInformation(parent, "Сохранение адреса почты", "Адрес электронной почты сохранён.");
-						}
+						MessageDialog.openInformation(parent, "Сохранение адреса почты", "Адрес электронной почты сохранён.");
 						m_exitBySavingButton = true;
 						parent.dispose();
 					}
@@ -101,9 +93,9 @@ public class EmailWindow
 						MessageDialog.openWarning(parent, "Проверка адреса почты", "Некорректный адрес электронной почты.");
 					}
 				} 
-				catch (Exception e) 
+				catch (Exception a_e) 
 				{
-					e.printStackTrace();
+					MessageDialog.openError(parent, "Ошибка", ERROR_MESSAGE + a_e.getMessage());
 				}
 			}
 
@@ -113,24 +105,20 @@ public class EmailWindow
 			}
 		});
 		
-		parent.addDisposeListener(new DisposeListener()
+		parent.addDisposeListener(new DisposeListener ()
 		{
 			@Override
-			public void widgetDisposed (DisposeEvent a_e)
+			public void widgetDisposed (DisposeEvent a_disEv)
 			{
 				try
 				{
-					AppUtil.writeToFile(m_statusFilePath, m_closedEmailWindow);
+					m_instance = null;
 					parent.dispose();
-					
-					if (m_exitBySavingButton)
-					{
-						m_emailSavinglistener.emailSaved();
-					}
+					if (m_exitBySavingButton) m_emailSavinglistener.emailSaved();
 				}
-				catch (Exception e) 
+				catch (Exception a_e) 
 				{
-					MessageDialog.openError(parent, "Ошибка", SendCommand.ERROR_MESSAGE + e.getMessage());
+					MessageDialog.openError(parent, "Ошибка", ERROR_MESSAGE + a_e.getMessage());
 				}
 			}
 		});
@@ -140,13 +128,13 @@ public class EmailWindow
 		parent.open();
 	}
 	
-	private Image getShellImage ()
+	private static Image getShellImage ()
 	{
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 		return sharedImages.getImageDescriptor(ISharedImages.IMG_OBJ_FILE).createImage();
 	}
 	
-	private void createLabel (Composite a_composite, String a_text, int a_horSpan)
+	private static void createLabel (Composite a_composite, String a_text, int a_horSpan)
 	{
 		Label label = new Label(a_composite , SWT.NONE);
 		label.setText(a_text);
