@@ -14,7 +14,7 @@ import eclipse.errors.log.sending.core.util.AppUtil;
 
 public class Client 
 {
-	private final String m_tokenFileName = "config.txt";
+	private final String m_configFileName = "config.txt";
 	private String m_request;
 	private String m_token;
 	private String m_reportArchivePath;
@@ -27,12 +27,8 @@ public class Client
 	public void sendReportArchive (String a_reportArchivePath) throws IOException
 	{
 		m_reportArchivePath = a_reportArchivePath;
-		URL requestUrl = new URL(m_request);
-		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-		connection.setDoOutput(true);
-		connection.setRequestMethod("POST");
-		connection.setRequestProperty("Authorization", m_token);
-		connection.connect();
+		
+		HttpURLConnection connection = connect(m_request  + "file");
 		
 		try(OutputStream out = connection.getOutputStream())
 		{
@@ -63,24 +59,64 @@ public class Client
 			}
 		}
 		
-		if (connection.getResponseCode() >= 400)
-		{
-			throw new IOException(connection.getResponseMessage());
-		}
-		
-		connection.disconnect();
+		disconnect(connection);
 	}
 	
 	private void setRequestAndToken () throws IOException
 	{
-		try (InputStream in = getClass().getClassLoader().getResourceAsStream(m_tokenFileName);
+		try (InputStream in = getClass().getClassLoader().getResourceAsStream(m_configFileName);
 			     BufferedReader reader = new BufferedReader(new InputStreamReader(in)))
 		{
 			m_request = reader.readLine();
 			m_token = reader.readLine();
-			if (m_token.endsWith(System.lineSeparator())) 
+			if (m_token.endsWith(System.lineSeparator()))
+			{
 				m_token = m_token.substring(0, m_token.length());
+			}
 		}
+	}
+	
+	private HttpURLConnection connect (String a_request) throws IOException
+	{
+		URL requestUrl = new URL(a_request);
+		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+		connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Authorization", m_token);
+		connection.connect();
+		
+		return connection;
+	}
+	
+	private void disconnect (HttpURLConnection a_connection) throws IOException
+	{
+		if (a_connection.getResponseCode() >= 400)
+		{
+			throw new IOException(a_connection.getResponseMessage());
+		}
+		
+		a_connection.disconnect();
+	}
+	
+	public void sendEmail (String a_oldValue, String a_newValue) throws IOException
+	{
+		HttpURLConnection connection = connect(m_request  + "email");
+		
+		try(OutputStream out = connection.getOutputStream())
+		{
+			int oldValueLength = a_oldValue.length();
+			String oldValueLengthLine = AppUtil.addZeroToString(Integer.toString(oldValueLength));
+			
+			String newValueLengthLine = AppUtil.addZeroToString(Integer.toString(a_newValue.length()));
+			
+			AppUtil.writeBytes(out, oldValueLengthLine);
+			if (oldValueLength > 0) AppUtil.writeBytes(out, a_oldValue);
+			
+			AppUtil.writeBytes(out, newValueLengthLine);
+			AppUtil.writeBytes(out, a_newValue);
+		}
+		
+		disconnect(connection);
 	}
 	
 	public void deleteArchive ()
