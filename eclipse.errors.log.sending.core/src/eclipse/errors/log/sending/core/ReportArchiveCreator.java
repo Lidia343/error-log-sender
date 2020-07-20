@@ -19,12 +19,7 @@ public class ReportArchiveCreator
 {
 	private final String m_systemInfFileName = "metadata.xml";
 	private final String m_summaryFileName = "summary.txt";
-	private String m_reportArchivePath = "report";
-	
-	public ReportArchiveCreator ()
-	{
-		m_reportArchivePath += " (" + AppUtil.getCurrentDateAndTime() + ").zip";
-	}
+	private String m_reportArchivePath = "report.zip";
 	
 	public void createReportArchive () throws InterruptedException, IOException
 	{

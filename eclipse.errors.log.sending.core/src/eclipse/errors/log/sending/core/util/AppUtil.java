@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -38,21 +36,6 @@ public class AppUtil
 			return false;
 		}
 		return true;
-	}
-	
-	public static String getCurrentDateAndTime ()
-	{
-		Calendar calendar = GregorianCalendar.getInstance();
-		
-		String day = addZeroToString((Integer.toString(calendar.get(Calendar.DAY_OF_MONTH))));
-		String month =  addZeroToString(Integer.toString(calendar.get(Calendar.MONTH) + 1));
-		String year = Integer.toString(calendar.get(Calendar.YEAR));
-		
-		String hour =  addZeroToString(Integer.toString(calendar.get(Calendar.HOUR_OF_DAY)));
-		String min =  addZeroToString(Integer.toString(calendar.get(Calendar.MINUTE)));
-		String sec =  addZeroToString(Integer.toString(calendar.get(Calendar.SECOND)));
-		
-		return day + "-" + month + "-" + year + " - " + hour + "-" + min + "-" + sec;
 	}
 	
 	public static String addZeroToString (String a_string)
