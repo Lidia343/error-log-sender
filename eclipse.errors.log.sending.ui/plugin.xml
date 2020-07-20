@@ -32,9 +32,10 @@
          name="PreferencePages"
          point="org.eclipse.ui.preferencePages">
       <page
+            category="org.eclipse.help.ui.browsersPreferencePage"
             class="eclipse.errors.log.sending.ui.email.EmailPreferencePage"
             id="eclipse.errors.log.sending.ui.email.emailPreferencePage"
-            name="Адрес электронной почты">
+            name="Отчёты об ошибках">
       </page>
    </extension>
    <extension
