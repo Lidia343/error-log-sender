@@ -28,7 +28,7 @@ public class Client
 	{
 		m_reportArchivePath = a_reportArchivePath;
 		
-		HttpURLConnection connection = connect(m_request  + "file");
+		HttpURLConnection connection = connect(m_request  + "file/send");
 		
 		try(OutputStream out = connection.getOutputStream())
 		{
