@@ -1,11 +1,14 @@
 package eclipse.errors.log.sending.ui.email;
 
+import java.io.IOException;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.prefs.BackingStoreException;
 
 import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.email.IEmailSavingListener;
@@ -20,7 +23,7 @@ public class EmailWindow
 		m_emailSavinglistener = a_emailSavinglistener;
 	}
 	
-	public void show () throws Exception 
+	public void show () throws IOException, InterruptedException, BackingStoreException
 	{
 		String message = "Перед отправкой отчёта на сервер необходимо указать адрес электронной почты для обратной связи." +
 				         "В дальнейшем возможно изменение адреса в настройках.";

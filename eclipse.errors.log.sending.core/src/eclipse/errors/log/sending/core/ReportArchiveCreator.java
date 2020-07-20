@@ -26,16 +26,22 @@ public class ReportArchiveCreator
 		m_reportArchivePath += " (" + AppUtil.getCurrentDateAndTime() + ").zip";
 	}
 	
-	public void createReportArchive () throws IOException, InterruptedException
+	public void createReportArchive () throws InterruptedException, IOException
 	{
 		File logFile = Platform.getLogFileLocation().toFile();
 		m_reportArchivePath = System.getProperty("java.io.tmpdir") + File.separator + m_reportArchivePath;
 		
-		try (FileInputStream logFin = new FileInputStream(logFile); FileOutputStream logFout = new FileOutputStream(m_reportArchivePath);
+		try (FileOutputStream logFout = new FileOutputStream(m_reportArchivePath);
 			 ZipOutputStream zipOut = new ZipOutputStream(logFout))
 		{
-			zipOut.putNextEntry(new ZipEntry(logFile.getName()));
-			AppUtil.writeInputStreamToOutputStream(logFin, zipOut);
+			if (logFile.exists())
+			{
+				try (FileInputStream logFin = new FileInputStream(logFile))
+				{
+					zipOut.putNextEntry(new ZipEntry(logFile.getName()));
+					AppUtil.writeInputStreamToOutputStream(logFin, zipOut);
+				}
+			}
 			
 			File systemInfFile = AppUtil.putNextEntryAndGetEntryFile(zipOut, m_systemInfFileName);
 			try (FileWriter systemInfFileWriter = new FileWriter(systemInfFile, false))
@@ -63,10 +69,6 @@ public class ReportArchiveCreator
 				summaryFileWriter.write(ConfigurationInfo.getSystemSummary());
 			}
 			AppUtil.writeFileToOutputStream(summaryFile, zipOut);
-		}
-		catch (IOException e)
-		{
-			throw e;
 		}
 	}
 	

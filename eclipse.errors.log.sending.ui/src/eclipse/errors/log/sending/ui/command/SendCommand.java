@@ -8,6 +8,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.osgi.service.prefs.BackingStoreException;
 
 import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.email.IEmailSavingListener;
@@ -31,9 +32,12 @@ public class SendCommand extends AbstractHandler
 			if (!new EmailChecker().checkEmailPreference()) new EmailWindow(getEmailSavingListener()).show();
 			else sendReportArchive();
 		} 
-		catch (Exception e) 
+		catch (InterruptedException | BackingStoreException e) 
 		{
 			MessageDialog.openError(m_parent, m_messageTitle, "Произошла ошибка. Подробная информация:" + System.lineSeparator() + e.getMessage());
+		}
+		catch (IOException e) 
+		{
 		}
 		finally 
 		{
@@ -47,7 +51,7 @@ public class SendCommand extends AbstractHandler
 		return new IEmailSavingListener ()
 		{
 			@Override
-			public void emailSaved() throws Exception
+			public void emailSaved() throws IOException, InterruptedException
 			{
 				sendReportArchive();
 			}
