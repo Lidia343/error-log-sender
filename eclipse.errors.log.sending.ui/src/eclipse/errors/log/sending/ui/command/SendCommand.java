@@ -28,12 +28,12 @@ public class SendCommand extends AbstractHandler
 		m_parent = HandlerUtil.getActiveShell(a_event);
 		try 
 		{
-			if (!new EmailChecker().checkEmailPreference()) EmailWindow.show(getEmailSavingListener());
+			if (!new EmailChecker().checkEmailPreference()) new EmailWindow(getEmailSavingListener()).show();
 			else sendReportArchive();
 		} 
-		catch (IOException | InterruptedException e) 
+		catch (Exception e) 
 		{
-			MessageDialog.openError(m_parent, m_messageTitle, EmailWindow.ERROR_MESSAGE + e.getMessage());
+			MessageDialog.openError(m_parent, m_messageTitle, "Произошла ошибка. Подробная информация:" + System.lineSeparator() + e.getMessage());
 		}
 		finally 
 		{

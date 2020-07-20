@@ -110,7 +110,7 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
 	@Override
 	protected void createFieldEditors() 
 	{
-		m_stringFieldEditor = new StringFieldEditor(EmailChecker.EMAIL_KEY, EmailWindow.EMAIL_LABEL_TEXT, getFieldEditorParent());
+		m_stringFieldEditor = new StringFieldEditor(EmailChecker.EMAIL_KEY, "Email:", getFieldEditorParent());
 		m_stringFieldEditor.setTextLimit(EmailChecker.EMAIL_TEXT_LIMIT);
         addField(m_stringFieldEditor);
 	}

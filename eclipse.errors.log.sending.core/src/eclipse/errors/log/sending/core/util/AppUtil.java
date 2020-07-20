@@ -147,14 +147,13 @@ public class AppUtil
 		return getPreferences().get(EmailChecker.EMAIL_KEY, "");
 	}
 	
-	public static boolean putEmailPreference (String a_email) throws BackingStoreException
+	public static void putEmailPreference (String a_email) throws BackingStoreException
 	{
-		if (!new EmailChecker().checkEmail(a_email)) return false;
+		if (!new EmailChecker().checkEmail(a_email)) return;
 		
 		IEclipsePreferences preferences = getPreferences();
 		preferences.put(EmailChecker.EMAIL_KEY, a_email);
 		preferences.flush();
-		return true;
 	}
 	
 	private static IEclipsePreferences getPreferences ()
