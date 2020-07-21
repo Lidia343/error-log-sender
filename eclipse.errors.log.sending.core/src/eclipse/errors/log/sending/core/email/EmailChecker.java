@@ -1,5 +1,6 @@
 package eclipse.errors.log.sending.core.email;
 
+import java.io.File;
 import java.io.IOException;
 
 import eclipse.errors.log.sending.core.util.AppUtil;
@@ -15,9 +16,16 @@ public class EmailChecker
 		return true;
 	}
 	
-	public boolean checkEmail (String a_email)
+	public static boolean checkEmail (String a_email)
 	{	
 		if (a_email == null) return false;
+		
+		if (a_email.contains(File.separator) || a_email.contains("/") || a_email.contains("\\") ||
+			a_email.contains(":") || a_email.contains("*") || a_email.contains("?") ||
+			a_email.contains("\"") || a_email.contains("<") || a_email.contains(">") || a_email.contains("|")) 
+		{
+			return false;
+		}
 		
 		int atCharIndex = a_email.indexOf('@');
 		if (atCharIndex == -1 || atCharIndex == 0 || atCharIndex >= (a_email.length() - 3)) return false;
