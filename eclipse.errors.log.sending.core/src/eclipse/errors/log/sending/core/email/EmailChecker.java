@@ -16,7 +16,7 @@ public class EmailChecker
 		return true;
 	}
 	
-	public static boolean checkEmail (String a_email)
+	public boolean checkEmail (String a_email)
 	{	
 		if (a_email == null) return false;
 		
