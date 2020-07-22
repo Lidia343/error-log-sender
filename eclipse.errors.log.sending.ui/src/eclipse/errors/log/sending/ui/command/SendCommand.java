@@ -1,5 +1,6 @@
 package eclipse.errors.log.sending.ui.command;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -32,12 +33,12 @@ public class SendCommand extends AbstractHandler
 			if (!new EmailChecker().checkEmailPreference()) new EmailWindow(getEmailSavingListener()).show();
 			else sendReportArchive();
 		} 
-		catch (InterruptedException | BackingStoreException e) 
+		catch (IOException | InterruptedException | BackingStoreException e) 
 		{
-			MessageDialog.openError(m_parent, m_messageTitle, "Произошла ошибка. Подробная информация:" + System.lineSeparator() + e.getMessage());
-		}
-		catch (IOException e) 
-		{
+			if (!(e instanceof FileNotFoundException))
+			{
+				MessageDialog.openError(m_parent, m_messageTitle, "Произошла ошибка. Подробная информация:" + System.lineSeparator() + e.getMessage());
+			}
 		}
 		finally 
 		{
