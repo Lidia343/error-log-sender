@@ -75,11 +75,10 @@ public class AppUtil
 	public static void writeInputStreamToOutputStream (FileInputStream a_fin, ZipOutputStream a_zout) throws IOException
 	{
 		byte[] buffer = new byte[64*1024];
-		int length = a_fin.read(buffer);
-		while (length > 0)
+		int length;
+		while ((length = a_fin.read(buffer)) > 0)
 		{
 			a_zout.write(buffer, 0, length);
-			length = a_fin.read(buffer);
 		}
 		a_zout.closeEntry();
 	}
