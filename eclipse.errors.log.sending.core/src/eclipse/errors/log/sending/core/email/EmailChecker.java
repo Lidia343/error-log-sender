@@ -1,23 +1,37 @@
 package eclipse.errors.log.sending.core.email;
 
 import java.io.File;
-import java.io.IOException;
 
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Класс для проверки адреса электронной почты пользователя.
+ */
 public class EmailChecker 
 {
 	public static final String EMAIL_KEY = "EMAIL";
 	public static final int EMAIL_TEXT_LIMIT = 99;
 	
-	public boolean checkEmailPreference () throws IOException
+	/**
+	 * Проверяет наличие адреса почты в настройках.
+	 * @return true - если в настройках указан email,
+	 * false - иначе
+	 */
+	public boolean checkEmailPreference ()
 	{
 		if (!checkEmail(AppUtil.getEmailFromPreferences())) return false;
 		return true;
 	}
 	
+	/**
+	 * Проверяет переданную строку на соответствие формату адреса электронной почты.
+	 * @param a_email 
+	 *        Строка для проверки
+	 * @return true - если строка прошла проверку,
+	 * false - иначе
+	 */
 	public boolean checkEmail (String a_email)
-	{	
+	{
 		if (a_email == null) return false;
 		
 		if (a_email.contains(File.separator) || a_email.contains("/") || a_email.contains("\\") ||

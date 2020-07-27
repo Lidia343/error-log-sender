@@ -12,6 +12,10 @@ import java.net.URL;
 
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Класс для отправки на сервер архива, созданного с помощью класса 
+ * ReportArchiveCreator, и адреса электронной почты пользователя.
+ */
 public class Client 
 {
 	private final String m_configFileName = "config.txt";
@@ -24,6 +28,16 @@ public class Client
 		setRequestAndToken();
 	}
 	
+	/**
+	 * Отправляет на сервер длину адреса электронной почты (для удобства
+	 * чтения адреса сервером), сам email (для идентификации клиента,
+	 * который отправляет архив, и для возможности обратной связи), длину
+	 * имени архива, имя архива, а также его содержимое.
+	 * 
+	 * @param a_reportArchivePath
+	 *        Путь к архиву
+	 * @throws IOException
+	 */
 	public void sendReportArchive (String a_reportArchivePath) throws IOException
 	{
 		m_reportArchivePath = a_reportArchivePath;
@@ -62,6 +76,12 @@ public class Client
 		disconnect(connection);
 	}
 	
+	/**
+	 * Устанавливает адрес сервера и токен для авторизации (информация 
+	 * читается из файла "config.txt", который находится в ресурсах 
+	 * плигина).
+	 * @throws IOException
+	 */
 	private void setRequestAndToken () throws IOException
 	{
 		try (InputStream in = getClass().getClassLoader().getResourceAsStream(m_configFileName);
@@ -76,6 +96,13 @@ public class Client
 		}
 	}
 	
+	/**
+	 * Устанавливает соединение с сервером.
+	 * @param a_request
+	 *        Запрос к серверу
+	 * @return объект класса HttpURLConnection
+	 * @throws IOException
+	 */
 	private HttpURLConnection connect (String a_request) throws IOException
 	{
 		URL requestUrl = new URL(a_request);
@@ -88,6 +115,12 @@ public class Client
 		return connection;
 	}
 	
+	/**
+	 * Закрывает текущее соединение с сервером.
+	 * @param a_connection
+	 *        Объект класса HttpURLConnection
+	 * @throws IOException
+	 */
 	private void disconnect (HttpURLConnection a_connection) throws IOException
 	{
 		if (a_connection.getResponseCode() >= 400)
@@ -98,6 +131,14 @@ public class Client
 		a_connection.disconnect();
 	}
 	
+	/**
+	 * Отправляет предыдущий и новый email на сервер.
+	 * @param a_oldValue
+	 *        Предыдущее значение адреса почты
+	 * @param a_newValue 
+	 *        Новое значение адреса почты
+	 * @throws IOException
+	 */
 	public void sendEmail (String a_oldValue, String a_newValue) throws IOException
 	{
 		HttpURLConnection connection = connect(m_request  + "email");
@@ -119,6 +160,10 @@ public class Client
 		disconnect(connection);
 	}
 	
+	/**
+	 * Удаляет архив. Если путь к архиву равен null (архив не был отправлен на сервер),
+	 * метод ничего не делает.
+	 */
 	public void deleteArchive ()
 	{
 		if (m_reportArchivePath == null) return;

@@ -16,8 +16,15 @@ import eclipse.errors.log.sending.core.client.Client;
 import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Страница настроек, содержащая элементы, необходимые для установки
+ * адреса электронной почты пользователя.
+ */
 public class EmailPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage 
 {
+	/**
+	 * Контроллер изменения значения адреса электронной почты.
+	 */
 	private static class ValueChangeController
 	{
 		private static ValueChangeController instance;
@@ -34,6 +41,18 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
 			return instance;
 		}
 		
+		/**
+		 * Метод необходим для гарантии того, что одна и та же комбинация
+		 * старого и нового значений адреса электронной почты отправится 
+		 * на сервер один раз.
+		 * @param a_oldValue
+		 *        Предыдущее значение email
+		 * @param a_newValue
+		 * 		  Новое значение email
+		 * @return true - если переданные значения подходят для отправки
+		 * на сервер, false - иначе
+		 * @throws IOException
+		 */
 		public boolean isChangeForSending (String a_oldValue, String a_newValue) throws IOException
 		{
 			if (m_sentEmail.equals(a_newValue)) return false;
@@ -56,6 +75,9 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
 		m_valueChangeController = ValueChangeController.getInstance();
 	}
 	
+	/**
+	 * Устанавливает описание страницы настроек и хранилище настроек.
+	 */
 	@Override
 	public void init (IWorkbench a_workbench) 
 	{
@@ -107,8 +129,12 @@ public class EmailPreferencePage extends FieldEditorPreferencePage implements IW
         setDescription("Изменение адреса электронной почты для обратной связи.");
 	}
 
+	/**
+	 * Добавляет на страницу настроек редактор StringFieldEditor для ввода адреса
+	 * электронной почты.
+	 */
 	@Override
-	protected void createFieldEditors() 
+	protected void createFieldEditors () 
 	{
 		m_stringFieldEditor = new StringFieldEditor(EmailChecker.EMAIL_KEY, "Email:", getFieldEditorParent());
 		m_stringFieldEditor.setTextLimit(EmailChecker.EMAIL_TEXT_LIMIT);

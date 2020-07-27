@@ -7,6 +7,10 @@ import org.eclipse.swt.widgets.Display;
 
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Класс для получения информации об аппаратных и программных 
+ * характеристиках системы пользователя.
+ */
 public class SystemInformation 
 {
 	private String m_osName;
@@ -16,16 +20,27 @@ public class SystemInformation
 		m_osName = System.getProperty("os.name");
 	}
 	
+	/**
+	 * @return имя ОС
+	 */
 	public String getOsName ()
 	{
 		return m_osName;
 	}
 	
+	/**
+	 * @return имя пользователя
+	 */
 	public String getUsername ()
 	{
 		return System.getProperty("user.name");
 	}
 	
+	/**
+	 * @return количество установленной ОП
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public String getRamAmount () throws IOException, InterruptedException
 	{
 		String osName = m_osName.toLowerCase();
@@ -77,6 +92,9 @@ public class SystemInformation
 		return null;
 	}
 	
+	/**
+	 * @return разрешение экрана
+	 */
 	public String getScreenResolution ()
 	{
 		Device device = Display.getDefault();

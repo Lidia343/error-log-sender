@@ -11,19 +11,25 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 
 import eclipse.errors.log.sending.core.email.EmailChecker;
-import eclipse.errors.log.sending.core.email.IEmailSavingListener;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Окно для ввода адреса электронной почты.
+ */
 public class EmailWindow
 {
-	private static IEmailSavingListener m_emailSavinglistener;
-	
-	public EmailWindow (IEmailSavingListener a_emailSavinglistener)
-	{
-		m_emailSavinglistener = a_emailSavinglistener;
-	}
-	
-	public void show () throws IOException, InterruptedException, BackingStoreException
+	/**
+	 * Показывает окно для ввода адреса электронной почты, используя класс
+	 * InputDialog.
+	 * @return значение, содержащее информацию о том, как был произведён
+	 * выход из диалогового окна (IDialogConstants.OK_ID - после нажатия
+	 * на кнопку "OK", IDialogConstants.CANCEL_ID - после нажатия на кнопку
+	 * "CANCEL" или "CLOSE")
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws BackingStoreException
+	 */
+	public int show () throws IOException, InterruptedException, BackingStoreException
 	{
 		String message = "Перед отправкой отчёта на сервер необходимо указать адрес электронной почты для обратной связи." +
 				         "В дальнейшем возможно изменение адреса в настройках.";
@@ -51,10 +57,14 @@ public class EmailWindow
 		if (emailDialog.getReturnCode() == IDialogConstants.OK_ID)
 		{
 			AppUtil.putEmailPreference(emailDialog.getValue());
-			m_emailSavinglistener.emailSaved();
+			return IDialogConstants.OK_ID;
 		}
+		return IDialogConstants.CANCEL_ID;
 	}
 	
+	/**
+	 * @return изображение для диалогового окна
+	 */
 	private static Image getShellImage ()
 	{
 		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
