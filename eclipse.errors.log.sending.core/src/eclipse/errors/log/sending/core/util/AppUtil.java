@@ -1,16 +1,13 @@
 package eclipse.errors.log.sending.core.util;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -108,7 +105,7 @@ public class AppUtil
 		}
 	}
 	
-	public static void writeInputStreamToOutputStream (FileInputStream a_fin, ZipOutputStream a_zout) throws IOException
+	public static void writeInputStreamToOutputStreamAndCloseEntry (InputStream a_fin, ZipOutputStream a_zout) throws IOException
 	{
 		byte[] buffer = new byte[64*1024];
 		int length;
@@ -120,54 +117,20 @@ public class AppUtil
 	}
 	
 	/**
-	 * Записывает файл a_file в выходной поток a_zout, а затем удаляет файл.
-	 * @param a_file
-	 * 		  Файл лдя записи
-	 * @param a_zout
-	 *        Выходной поток
-	 * @throws IOException
-	 */
-	public static void writeFileToOutputStreamAndDelete (File a_file, ZipOutputStream a_zout) throws IOException
-	{
-		try (FileInputStream in = new FileInputStream(a_file))
-		{
-			AppUtil.writeInputStreamToOutputStream(in, a_zout);
-		}
-		a_file.delete();
-	}
-	
-	/**
 	 * Записывает один тег в xml-файл.
 	 * @param a_writer
-	 * 		  Объект класса FileWriter, с помощью которого производится запись в файл
+	 * 		  Объект класса Writer, с помощью которого производится запись в файл
 	 * @param a_tagName
 	 * 		  Имя тега 
 	 * @param a_tagContent
 	 *        Содержимое тега
 	 * @throws IOException
 	 */
-	public static void writeToXmlFile (FileWriter a_writer, String a_tagName, String a_tagContent) throws IOException
+	public static void writeToXmlFile (Writer a_writer, String a_tagName, String a_tagContent) throws IOException
 	{
 		a_writer.write("\t<" + a_tagName + ">");
 		a_writer.write(a_tagContent);
 		a_writer.write("</" + a_tagName + ">" + System.lineSeparator());
-	}
-	
-	/**
-	 * Записывает строку a_string в файл.
-	 * @param a_filePath
-	 * 		  Путь к файлу
-	 * @param a_string
-	 * 	      Строка для записи
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	public static void writeToFile (String a_filePath, String a_string) throws FileNotFoundException, IOException
-	{
-		try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(a_filePath))))
-		{
-			out.write(a_string);
-		}
 	}
 	
 	/**
@@ -196,12 +159,12 @@ public class AppUtil
 	 * @param a_fileName
 	 * 		  Имя вложения
 	 * @return вложение в виде объекта класса File
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public static File putNextEntryAndGetEntryFile (ZipOutputStream a_zout, String a_fileName) throws IOException
+	public static void putNextEntryAndWriteToOutputStream (ZipOutputStream a_zout, String a_entryName, InputStream a_in) throws Exception
 	{
-		a_zout.putNextEntry(new ZipEntry(a_fileName));
-		return new File(a_fileName);
+		a_zout.putNextEntry(new ZipEntry(a_entryName));
+		AppUtil.writeInputStreamToOutputStreamAndCloseEntry(a_in, a_zout);
 	}
 	
 	/**
