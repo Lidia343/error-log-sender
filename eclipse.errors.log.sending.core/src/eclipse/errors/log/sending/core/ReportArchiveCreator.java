@@ -1,28 +1,27 @@
 package eclipse.errors.log.sending.core;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.internal.ConfigurationInfo;
 
-import eclipse.errors.log.sending.core.system.SystemInformation;
+import eclipse.errors.log.sending.core.entry.Entry;
+import eclipse.errors.log.sending.core.entry.IEntryFactory;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.zip.ZipEntry;
+import java.io.InputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
  * Класс для создания архива с файлами, содержащими различную информацию о 
  * системе пользователя и используемом приложении.
  */
-@SuppressWarnings("restriction")
 public class ReportArchiveCreator 
 {
-	private final String m_systemInfFileName = "metadata.xml";
-	private final String m_summaryFileName = "summary.txt";
+	public final String m_entryExtensionPointId = "eclipse.errors.log.sending.core.entries";
+	public final String m_entryFactoryExtensionPointId = "eclipse.errors.log.sending.core.entryFactories";
+	
 	private String m_reportArchivePath = "report.zip";
 	
 	/**
@@ -31,52 +30,42 @@ public class ReportArchiveCreator
 	 * системы пользователя (название ОС, количество установленной ОЗУ и т. д.), 
 	 * конфигурацию используемого приложения и информацию о его работе (лог с 
 	 * ошибками).
-	 * @throws InterruptedException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public void createReportArchive () throws InterruptedException, IOException
+	public void createReportArchive () throws Exception
 	{
-		File logFile = Platform.getLogFileLocation().toFile();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] extensions = registry.getConfigurationElementsFor(m_entryExtensionPointId);
+		
 		m_reportArchivePath = System.getProperty("java.io.tmpdir") + File.separator + m_reportArchivePath;
 		
 		try (FileOutputStream logFout = new FileOutputStream(m_reportArchivePath);
 			 ZipOutputStream zipOut = new ZipOutputStream(logFout))
 		{
-			if (logFile.exists())
+			for (IConfigurationElement e : extensions)
 			{
-				try (FileInputStream logFin = new FileInputStream(logFile))
+				String bundleSymbolicName = e.getContributor().getName();
+				Class<?> entryClass = Platform.getBundle(bundleSymbolicName).loadClass(e.getAttribute("class"));
+				String entryName = e.getAttribute("name");
+				Entry entry = ((Entry)entryClass.getConstructor(String.class).newInstance(entryName));
+				InputStream input = entry.getInputStream();
+				if (input != null)
 				{
-					zipOut.putNextEntry(new ZipEntry(logFile.getName()));
-					AppUtil.writeInputStreamToOutputStream(logFin, zipOut);
+					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entryName, input);
 				}
 			}
 			
-			File systemInfFile = AppUtil.putNextEntryAndGetEntryFile(zipOut, m_systemInfFileName);
-			try (FileWriter systemInfFileWriter = new FileWriter(systemInfFile, false))
+			extensions = registry.getConfigurationElementsFor(m_entryFactoryExtensionPointId);
+			for (IConfigurationElement e : extensions)
 			{
-				SystemInformation systemInf = new SystemInformation();
-				systemInfFileWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.lineSeparator());
-				systemInfFileWriter.write("<metadata>" + System.lineSeparator());
-				AppUtil.writeToXmlFile(systemInfFileWriter, "osName", systemInf.getOsName());
-				AppUtil.writeToXmlFile(systemInfFileWriter, "username", systemInf.getUsername());
-				
-				String ramAmount = systemInf.getRamAmount();
-				if (ramAmount != null)
+				String bundleSymbolicName = e.getContributor().getName();
+				Class<?> entryFactoryClass = Platform.getBundle(bundleSymbolicName).loadClass(e.getAttribute("class"));
+				IEntryFactory entryFactory = ((IEntryFactory)entryFactoryClass.getConstructor().newInstance());
+				for (Entry entry : entryFactory.getEntries())
 				{
-					AppUtil.writeToXmlFile(systemInfFileWriter, "ramAmount", systemInf.getRamAmount());
+					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), entry.getInputStream());
 				}
-				
-				AppUtil.writeToXmlFile(systemInfFileWriter, "screenResolution", systemInf.getScreenResolution());
-				systemInfFileWriter.write("</metadata>");
 			}
-			AppUtil.writeFileToOutputStreamAndDelete(systemInfFile, zipOut);
-			
-			File summaryFile = AppUtil.putNextEntryAndGetEntryFile(zipOut, m_summaryFileName);
-			try (FileWriter summaryFileWriter = new FileWriter(summaryFile, false))
-			{
-				summaryFileWriter.write(ConfigurationInfo.getSystemSummary());
-			}
-			AppUtil.writeFileToOutputStreamAndDelete(summaryFile, zipOut);
 		}
 	}
 	

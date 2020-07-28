@@ -1,7 +1,6 @@
 package eclipse.errors.log.sending.ui.command;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -10,7 +9,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.osgi.service.prefs.BackingStoreException;
 
 import eclipse.errors.log.sending.core.email.EmailChecker;
 import eclipse.errors.log.sending.ui.email.EmailWindow;
@@ -50,7 +48,7 @@ public class SendCommand extends AbstractHandler
 			}
 			else createAndSendReportArchive();
 		} 
-		catch (IOException | InterruptedException | BackingStoreException e) 
+		catch (Exception e) 
 		{
 			if (!(e instanceof FileNotFoundException))
 			{
@@ -66,10 +64,9 @@ public class SendCommand extends AbstractHandler
 	
 	/**
 	 * Вызывает методы для создания архива и отправки его на сервер.
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws Exception 
 	 */
-	private void createAndSendReportArchive () throws IOException, InterruptedException
+	private void createAndSendReportArchive () throws Exception
 	{
 		ReportArchiveCreator archiveCreator = new ReportArchiveCreator();
 		archiveCreator.createReportArchive();

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="entries" name="Archive Entries" schema="schema/eclipse.errors.log.sending.core.entries.exsd"/>
+   <extension-point id="entryFactories" name="Entry Factories" schema="schema/eclipse.errors.log.sending.core.entryFactories.exsd"/>
+   <extension
+         id="defaultEntries"
+         name="Default Entries"
+         point="eclipse.errors.log.sending.core.entries">
+      <entry
+            class="eclipse.errors.log.sending.core.entry.ErrorLog"
+            name=".log">
+      </entry>
+      <entry
+            class="eclipse.errors.log.sending.core.entry.Metadata"
+            name="metadata.xml">
+      </entry>
+      <entry
+            class="eclipse.errors.log.sending.core.entry.Summary"
+            name="summary.txt">
+      </entry>
+   </extension>
+
+</plugin>
