@@ -53,7 +53,7 @@ public class AppUtil
 	}
 	
 	/**
-	 * Выполняет команду для командной строки и возвращает её результат.
+	 * Выполняет команду для командной строки и возвращает результат её выполнения.
 	 * @param a_processBuilder
 	 *        Объект класса ProcessBuilder, необходимый для выполнения команды
 	 * @param a_commandLineArray
@@ -65,11 +65,11 @@ public class AppUtil
 	public static String commandAndGetResult (ProcessBuilder a_processBuilder, String a_commandLineArray[]) throws IOException, InterruptedException
 	{
 		a_processBuilder.command(a_commandLineArray[0], a_commandLineArray[1], a_commandLineArray[2]);
-		return AppUtil.getInputStreamAsString(a_processBuilder);
+		return AppUtil.getProcessOutput(a_processBuilder);
 	}
 	
 	/**
-	 * Возвращает в виде строки входной поток процесса, полученного с помощью метода
+	 * Возвращает в виде строки поток вывода процесса, полученного с помощью метода
 	 * a_processBuilder.start().
 	 * @param a_processBuilder
 	 *        Объект класса ProcessBuilder
@@ -77,7 +77,7 @@ public class AppUtil
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private static String getInputStreamAsString (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
+	private static String getProcessOutput (ProcessBuilder a_processBuilder) throws IOException, InterruptedException
 	{
 		Process process = a_processBuilder.start();
 		StringBuilder stringBuilder = new StringBuilder();
