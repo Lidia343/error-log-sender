@@ -1,2 +1,2 @@
-http://localhost:8080/report.actions/
+http://localhost:8080/
 4r3rSw4654wyb3aEg4Fqq6454qwEbh6q346qGm8emxgok9E8543e
