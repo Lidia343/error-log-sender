@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="eclipse.errors.log.sending.ui.helpMenu"
+         name="HelpMenu"
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:help">
+         <command
+               commandId="eclipse.errors.log.sending.ui.command.sendToServerCommand"
+               id="eclipse.errors.log.sending.ui.command.sendToServerCommand"
+               label="Отправить отчёт об ошибке на сервер"
+               style="push">
+         </command>
+         <command
+               commandId="eclipse.errors.log.sending.ui.command.saveToFileCommand"
+               id="eclipse.errors.log.sending.ui.command.saveToFileCommand"
+               label="Сохранить отчёт об ошибке в файл"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.command.helpCommands"
+         name="HelpCommands"
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="eclipse.errors.log.sending.ui.command.SendToServerCommand"
+            description="Отправить отчёт об ошибке на сервер"
+            id="eclipse.errors.log.sending.ui.command.sendToServerCommand"
+            name="sendToServerCommand">
+      </command>
+      <command
+            defaultHandler="eclipse.errors.log.sending.ui.command.SaveToFileCommand"
+            description="Сохранить отчёт об ошибке в файл"
+            id="eclipse.errors.log.sending.ui.command.saveToFileCommand"
+            name="saveToFileCommand">
+      </command>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.PreferencePages"
+         name="PreferencePages"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.help.ui.browsersPreferencePage"
+            class="eclipse.errors.log.sending.ui.email.EmailPreferencePage"
+            id="eclipse.errors.log.sending.ui.email.emailPreferencePage"
+            name="Отчёты об ошибках">
+      </page>
+   </extension>
+   <extension
+         id="eclipse.errors.log.sending.ui.preferences"
+         name="Preferences"
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="eclipse.errors.log.sending.ui.email.EmailPreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>
