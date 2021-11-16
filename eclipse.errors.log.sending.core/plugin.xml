@@ -19,6 +19,10 @@
             class="eclipse.errors.log.sending.core.entry.Summary"
             name="summary.txt">
       </entry>
+      <entry
+            class="eclipse.errors.log.sending.core.entry.Screenshot"
+            name="screenshot.png">
+      </entry>
    </extension>
 
 </plugin>
