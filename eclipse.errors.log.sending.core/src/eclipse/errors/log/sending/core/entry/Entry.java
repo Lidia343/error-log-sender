@@ -3,7 +3,8 @@ import java.io.InputStream;
 
 public abstract class Entry
 {
-	private String m_entryName;
+	protected String m_entryName;
+	protected boolean m_hasNext = false;
 	
 	public Entry (String a_entryName)
 	{
@@ -18,5 +19,10 @@ public abstract class Entry
 	public String getEntryName ()
 	{
 		return m_entryName;
+	}
+	
+	public boolean hasNext()
+	{
+		return m_hasNext;
 	}
 }

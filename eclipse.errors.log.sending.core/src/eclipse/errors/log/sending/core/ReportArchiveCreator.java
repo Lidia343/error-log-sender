@@ -53,10 +53,11 @@ public class ReportArchiveCreator
 				Class<?> entryClass = Platform.getBundle(bundleSymbolicName).loadClass(e.getAttribute("class"));
 				String entryName = e.getAttribute("name");
 				Entry entry = ((Entry)entryClass.getConstructor(String.class).newInstance(entryName));
-				InputStream input = entry.getInputStream();
-				if (input != null)
+				InputStream input;
+				while ((input = entry.getInputStream()) != null)
 				{
-					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entryName, input);
+					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), input);
+					if (!entry.hasNext()) break;
 				}
 			}
 			
