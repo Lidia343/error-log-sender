@@ -1,28 +1,32 @@
 package eclipse.errors.log.sending.core.entry;
 import java.io.InputStream;
+import java.util.Objects;
 
-public abstract class Entry
+/**
+ * Вложение архива.
+ */
+public class Entry
 {
-	protected String m_entryName;
-	protected boolean m_hasNext = false;
+	private String m_entryName;
+	private InputStream m_in;
 	
 	public Entry (String a_entryName)
 	{
 		m_entryName = a_entryName;
 	}
 	
+	public void setInputStream (InputStream a_in)
+	{
+		m_in = Objects.requireNonNull(a_in);
+	}
+	
 	public InputStream getInputStream () throws Exception
 	{
-		return null;
+		return m_in;
 	}
 	
 	public String getEntryName ()
 	{
 		return m_entryName;
-	}
-	
-	public boolean hasNext()
-	{
-		return m_hasNext;
 	}
 }

@@ -11,6 +11,9 @@ import java.nio.charset.StandardCharsets;
 import eclipse.errors.log.sending.core.system.SystemInformation;
 import eclipse.errors.log.sending.core.util.AppUtil;
 
+/**
+ * Информация о системе пользователя.
+ */
 public class Metadata extends Entry
 {
 	public Metadata(String a_entryName) 
@@ -18,6 +21,10 @@ public class Metadata extends Entry
 		super(a_entryName);
 	}
 
+	/**
+	 * @return информацию о системе пользователя (имя ОС, пользователя,
+	 * количество ОП, разрешение экрана) в виде входного потока xml-файла
+	 */
 	@Override
 	public InputStream getInputStream() throws IOException, InterruptedException 
 	{

@@ -47,30 +47,53 @@ public class ReportArchiveCreator
 		try (FileOutputStream logFout = new FileOutputStream(m_reportArchivePath);
 			 ZipOutputStream zipOut = new ZipOutputStream(logFout))
 		{
-			for (IConfigurationElement e : extensions)
+			Exception exceptionToThrow = null;
+			for (IConfigurationElement ext : extensions)
 			{
-				String bundleSymbolicName = e.getContributor().getName();
-				Class<?> entryClass = Platform.getBundle(bundleSymbolicName).loadClass(e.getAttribute("class"));
-				String entryName = e.getAttribute("name");
-				Entry entry = ((Entry)entryClass.getConstructor(String.class).newInstance(entryName));
-				InputStream input;
-				while ((input = entry.getInputStream()) != null)
+				try
 				{
-					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), input);
-					if (!entry.hasNext()) break;
+					String bundleSymbolicName = ext.getContributor().getName();
+					Class<?> entryClass = Platform.getBundle(bundleSymbolicName).loadClass(ext.getAttribute("class"));
+					String entryName = ext.getAttribute("name");
+					Entry entry = ((Entry)entryClass.getConstructor(String.class).newInstance(entryName));
+					InputStream input = entry.getInputStream();
+					if (input != null)
+					{
+						AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entryName, input);
+					}
+				}
+				catch(Exception e)
+				{
+					//Продолжим записывать следующие вложения, но запомним исключение:
+					exceptionToThrow = e;
+					continue;
 				}
 			}
 			
 			extensions = registry.getConfigurationElementsFor(m_entryFactoryExtensionPointId);
-			for (IConfigurationElement e : extensions)
+			for (IConfigurationElement ext : extensions)
 			{
-				String bundleSymbolicName = e.getContributor().getName();
-				Class<?> entryFactoryClass = Platform.getBundle(bundleSymbolicName).loadClass(e.getAttribute("class"));
-				IEntryFactory entryFactory = ((IEntryFactory)entryFactoryClass.getConstructor().newInstance());
-				for (Entry entry : entryFactory.getEntries())
+				try
 				{
-					AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), entry.getInputStream());
+					String bundleSymbolicName = ext.getContributor().getName();
+					Class<?> entryFactoryClass = Platform.getBundle(bundleSymbolicName).loadClass(ext.getAttribute("class"));
+					IEntryFactory entryFactory = ((IEntryFactory)entryFactoryClass.getConstructor().newInstance());
+					for (Entry entry : entryFactory.getEntries())
+					{
+						AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), entry.getInputStream());
+					}
 				}
+				catch(Exception e)
+				{
+					//Продолжим записывать следующие вложения, но запомним исключение:
+					exceptionToThrow = e;
+					continue;
+				}
+			}
+			
+			if (exceptionToThrow != null)
+			{
+				throw exceptionToThrow;
 			}
 		}
 	}

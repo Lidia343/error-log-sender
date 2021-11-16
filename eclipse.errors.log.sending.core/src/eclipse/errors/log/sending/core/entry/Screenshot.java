@@ -12,6 +12,9 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * Скриншот текущего окна САПРа.
+ */
 public class Screenshot extends Entry
 {
 	public Screenshot(String a_entryName)
@@ -19,6 +22,10 @@ public class Screenshot extends Entry
 		super(a_entryName);
 	}
 	
+	/**
+	 * @return входной поток .png-файла со скриншотом
+	 * текущего окна САПРа
+	 */
 	@Override
 	public InputStream getInputStream() throws IOException, InterruptedException 
 	{

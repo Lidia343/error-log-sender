@@ -24,5 +24,12 @@
             name="screenshot.png">
       </entry>
    </extension>
-
+   <extension
+         id="defaultEntryFactories"
+         name="Default Entry Factories"
+         point="eclipse.errors.log.sending.core.entryFactories">
+      <entry
+            class="eclipse.errors.log.sending.core.entry.BakFileFactory">
+      </entry>
+   </extension>
 </plugin>

@@ -10,6 +10,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.ui.internal.ConfigurationInfo;
 
+/**
+ * Конфигурация запуска САПРа.
+ */
 @SuppressWarnings("restriction")
 public class Summary extends Entry 
 {
@@ -18,6 +21,11 @@ public class Summary extends Entry
 		super(a_entryName);
 	}
 
+	/**
+	 * @return входной поток строки (UTF-8), содержащей информацию
+	 * о конфигурации запуска САПРа (строка эквивалентна значению,
+	 * возвращаемому методом ConfigurationInfo.getSystemSummary())
+	 */
 	@Override
 	public InputStream getInputStream() throws IOException 
 	{
