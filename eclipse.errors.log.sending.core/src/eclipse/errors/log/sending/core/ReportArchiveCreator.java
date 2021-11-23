@@ -11,6 +11,7 @@ import eclipse.errors.log.sending.core.util.AppUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.zip.ZipOutputStream;
 
@@ -78,9 +79,15 @@ public class ReportArchiveCreator
 					String bundleSymbolicName = ext.getContributor().getName();
 					Class<?> entryFactoryClass = Platform.getBundle(bundleSymbolicName).loadClass(ext.getAttribute("class"));
 					IEntryFactory entryFactory = ((IEntryFactory)entryFactoryClass.getConstructor().newInstance());
-					for (Entry entry : entryFactory.getEntries())
+					List<Entry> entries = entryFactory.getEntries();
+					if (entries == null) continue;
+					for (Entry entry : entries)
 					{
-						AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), entry.getInputStream());
+						InputStream entryInput = entry.getInputStream();
+						if (entryInput != null)
+						{
+							AppUtil.putNextEntryAndWriteToOutputStream(zipOut, entry.getEntryName(), entryInput);
+						}
 					}
 				}
 				catch(Exception e)

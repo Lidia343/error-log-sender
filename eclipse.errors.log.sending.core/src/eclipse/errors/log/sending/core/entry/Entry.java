@@ -7,12 +7,12 @@ import java.util.Objects;
  */
 public class Entry
 {
-	private String m_entryName;
+	protected String m_entryName;
 	private InputStream m_in;
 	
 	public Entry (String a_entryName)
 	{
-		m_entryName = a_entryName;
+		m_entryName = Objects.requireNonNull(a_entryName);
 	}
 	
 	public void setInputStream (InputStream a_in)
